@@ -16,6 +16,13 @@ def get_orderbook(token_id: str):
     return _client.get_order_book(token_id)
 
 
+# TODO (Phase 3-4): get_midpoint returns naive (best_bid + best_ask) / 2,
+# which misrepresents perceived probability in lopsided books (e.g. a YES
+# token trading at 1¢ bid / 99¢ ask returns 0.50 midpoint despite ~1% true
+# probability). For microstructure analysis, consider:
+#   - Volume-weighted mid from recent trades
+#   - Last-trade price (via trades endpoint)
+#   - Time-weighted mid over a window
 def get_midpoint(token_id: str) -> float:
     """Return the midpoint price for a CLOB token id."""
     resp = _client.get_midpoint(token_id)
