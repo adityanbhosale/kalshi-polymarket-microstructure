@@ -1,1 +1,46 @@
-# Cross-venue market mapping (populated in Phase 2).
+# Cross-venue prediction market pairings for microstructure analysis.
+# Curated May 25, 2026.
+# Scope decision: discovery surfaced only one category with substantial
+# cross-venue volume — 2026 NBA Finals team-win markets. Other categories
+# (Macro/Fed, Crypto, Politics, World Cup) had either Kalshi-only or
+# Polymarket-only markets, or thin volume on at least one side. The asymmetry
+# itself is a finding documented in the writeup.
+
+- id: nba_finals_okc
+  category: sports_nba_finals
+  description: "Will the Oklahoma City Thunder win the 2026 NBA Finals?"
+  kalshi:
+    ticker: KXNBA-26-OKC
+    volume_at_curation: 18610143
+  polymarket:
+    condition_id: "0x22e7b5e35423e76842dd3a5e1a21d13793811080d5e7b2896d0c001bd5e97d54"
+    yes_token_id: "49500299856831034491021962156746701298730459370557900271970866855042624695770"
+    no_token_id: "44914465637297319816681463234953032477919413063019359633128421605039733545953"
+    volume_at_curation: 13796699
+  match_notes: "Same event, same resolution criterion (OKC wins 2026 NBA Finals championship). Both markets trade through Finals series resolution. High-volume on both venues. Curated 2026-05-25."
+
+- id: nba_finals_cle
+  category: sports_nba_finals
+  description: "Will the Cleveland Cavaliers win the 2026 NBA Finals?"
+  kalshi:
+    ticker: KXNBA-26-CLE
+    volume_at_curation: 18545418
+  polymarket:
+    condition_id: "0x6b44bd667fad6cb5b3b68d8bd1055a038c77d9176dbd51f123879797cc3368a7"
+    yes_token_id: "21929863894047830651599085392978377118642353711084157807549430066031384497667"
+    no_token_id: "87330689906224096887625709229706923472442188571057301299963059101866409440363"
+    volume_at_curation: 18633875
+  match_notes: "Same event, same resolution criterion (CLE wins 2026 NBA Finals championship). Highest-volume-symmetric pair (Kalshi $18.5M ≈ Polymarket $18.6M). Curated 2026-05-25."
+
+- id: nba_finals_nyk
+  category: sports_nba_finals
+  description: "Will the New York Knicks win the 2026 NBA Finals?"
+  kalshi:
+    ticker: KXNBA-26-NYK
+    volume_at_curation: 24802017
+  polymarket:
+    condition_id: "0x713641f745d71f6ec61f906237ffca3c8583f251e49384429a63ceb0ccdb2d37"
+    yes_token_id: "20257190540739490630509657713144742134547949967093643458458133445357169845406"
+    no_token_id: "17708405597762492396230053798259456743362821303907987242039469238534993878340"
+    volume_at_curation: 16044555
+  match_notes: "Same event, same resolution criterion (NYK wins 2026 NBA Finals championship). Highest combined volume pair (Kalshi $24.8M + Polymarket $16.0M). Curated 2026-05-25."
