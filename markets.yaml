@@ -43,5 +43,7 @@
     yes_token_id: "20257190540..."
     no_token_id: "17708405597..."
     no_token_orderbook_status: "404_unlisted"  # verified 2026-05-25
+    yes_token_orderbook_status: "404_observed_2026-05-26"  # was active on 2026-05-25 22:09 UTC snapshot
     volume_at_curation: 16044555
+    notes: "Polymarket withdrew NYK liquidity between snapshot (05-25 22:09 UTC) and Phase 4 fresh fetch (05-26 afternoon). Phase 3 snapshot retains the only live YES book observation for this market."
   match_notes: "Same event, same resolution criterion (NYK wins 2026 NBA Finals championship). Highest combined volume pair (Kalshi $24.8M + Polymarket $16.0M). Curated 2026-05-25."
