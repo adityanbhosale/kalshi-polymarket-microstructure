@@ -1,4 +1,4 @@
 market_id,data_source,kalshi_mid,polymarket_yes_mid,polymarket_no_mid,discrepancy_direct_cents,discrepancy_synthetic_cents,crossed_direct,crossed_direct_lockable_cents,crossed_synthetic,crossed_synthetic_lockable_cents,exec_direct_fillable_size,exec_direct_net_profit,exec_direct_per_contract,exec_synthetic_fillable_size,exec_synthetic_net_profit,exec_synthetic_per_contract
-nba_finals_okc,fresh,0.48,0.485,0.515,0.5000000000000004,0.5000000000000004,False,,False,,0.0,0.0,0.0,0.0,0.0,0.0
-nba_finals_cle,fresh,,0.0045000000000000005,0.9955,,,False,,False,,0.0,0.0,0.0,0.0,0.0,0.0
+nba_finals_okc,fresh,0.455,0.455,0.545,0.0,-1.1102230246251565e-14,False,,False,,0.0,0.0,0.0,0.0,0.0,0.0
+nba_finals_cle,snapshot_fallback,,0.0045000000000000005,0.9955,,,False,,False,,0.0,0.0,0.0,0.0,0.0,0.0
 nba_finals_nyk,snapshot_fallback,0.26,0.2585,,-0.15000000000000013,,False,,False,,0.0,0.0,0.0,0.0,0.0,0.0

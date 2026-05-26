@@ -1,0 +1,34 @@
+- timestamp_utc: '2026-05-25T22:09:56Z'
+  source: phase_3_snapshot
+  okc_kalshi_mid: 0.475
+  okc_polymarket_yes_mid: 0.485
+  okc_discrepancy_cents: 1.0
+  nyk_polymarket_yes_status: active
+  notes: Initial Phase 3 snapshot. All three markets had Polymarket YES books. Exact
+    timestamp from snapshot directory name (snapshot_20260525T220956Z).
+- timestamp_utc: '2026-05-26T08:00:00Z'
+  source: phase_4_fresh_first
+  okc_kalshi_mid: 0.48
+  okc_polymarket_yes_mid: 0.485
+  okc_discrepancy_cents: 0.5
+  nyk_polymarket_yes_status: active_then_404
+  notes: OKC narrowed by half. NYK YES still active at fetch time (later 404'd). Timestamp
+    is a best-effort placeholder; original run was within ~12 hours of the Phase 3
+    snapshot.
+- timestamp_utc: '2026-05-26T16:00:00Z'
+  source: phase_4_fresh_second
+  okc_kalshi_mid: 0.485
+  okc_polymarket_yes_mid: 0.485
+  okc_discrepancy_cents: 0.0
+  nyk_polymarket_yes_status: '404'
+  notes: "OKC fully converged. NYK YES 404 \u2014 Polymarket withdrew liquidity. Timestamp\
+    \ is a best-effort placeholder; observed roughly 8 hours after the first fresh\
+    \ fetch."
+- timestamp_utc: '2026-05-26T19:32:24Z'
+  source: phase_5_fresh
+  okc_kalshi_mid: 0.455
+  okc_polymarket_yes_mid: 0.455
+  okc_discrepancy_cents: 0.0
+  nyk_polymarket_yes_status: '404'
+  cle_polymarket_status: '404'
+  notes: Both venues now price OKC at 0.455 (down 3 cents from prior snapshot); convergence holds. NYK YES Polymarket still 404. New observation - CLE Polymarket YES book also 404'd this run (was active during Phase 3). Two of three Polymarket books now de-listed.

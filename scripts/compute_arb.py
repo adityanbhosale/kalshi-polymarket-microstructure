@@ -185,6 +185,36 @@ def main(fresh: bool = False):
     df.to_csv(outpath, index=False)
     print(f"\n✅ Wrote {len(rows)} rows to {outpath}")
 
+    if fresh:
+        ledger_path = REPO_ROOT / "data" / "processed" / "snapshot_ledger.yaml"
+        ledger = []
+        if ledger_path.exists():
+            with open(ledger_path) as f:
+                ledger = yaml.safe_load(f) or []
+
+        okc_row = next((r for r in rows if r["market_id"] == "nba_finals_okc"), None)
+        nyk_row = next((r for r in rows if r["market_id"] == "nba_finals_nyk"), None)
+
+        if okc_row:
+            new_entry = {
+                "timestamp_utc": utc_now(),
+                "source": "compute_arb_fresh",
+                "okc_kalshi_mid": float(okc_row["kalshi_mid"]) if okc_row.get("kalshi_mid") is not None else None,
+                "okc_polymarket_yes_mid": float(okc_row["polymarket_yes_mid"]) if okc_row.get("polymarket_yes_mid") is not None else None,
+                "okc_discrepancy_cents": float(okc_row["discrepancy_direct_cents"]) if okc_row.get("discrepancy_direct_cents") is not None else None,
+                "nyk_polymarket_yes_status": (
+                    "404" if (nyk_row is None
+                              or nyk_row.get("polymarket_yes_mid") is None
+                              or nyk_row.get("data_source") == "snapshot_fallback")
+                    else "active"
+                ),
+                "notes": "Auto-appended by compute_arb.py --fresh",
+            }
+            ledger.append(new_entry)
+            with open(ledger_path, "w") as f:
+                yaml.dump(ledger, f, sort_keys=False, default_flow_style=False)
+            print(f"\nAppended entry to {ledger_path}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
