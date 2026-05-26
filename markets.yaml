@@ -39,11 +39,8 @@
     ticker: KXNBA-26-NYK
     volume_at_curation: 24802017
   polymarket:
-    condition_id: "0x713641f74..."
-    yes_token_id: "20257190540..."
-    no_token_id: "17708405597..."
-    no_token_orderbook_status: "404_unlisted"  # verified 2026-05-25
-    yes_token_orderbook_status: "404_observed_2026-05-26"  # was active on 2026-05-25 22:09 UTC snapshot
+    condition_id: "0x713641f745d71f6ec61f906237ffca3c8583f251e49384429a63ceb0ccdb2d37"
+    yes_token_id: "20257190540739490630509657713144742134547949967093643458458133445357169845406"
+    no_token_id: "17708405597762492396230053798259456743336282130390798724203946923853499387834"
     volume_at_curation: 16044555
-    notes: "Polymarket withdrew NYK liquidity between snapshot (05-25 22:09 UTC) and Phase 4 fresh fetch (05-26 afternoon). Phase 3 snapshot retains the only live YES book observation for this market."
-  match_notes: "Same event, same resolution criterion (NYK wins 2026 NBA Finals championship). Highest combined volume pair (Kalshi $24.8M + Polymarket $16.0M). Curated 2026-05-25."
+  match_notes: "Same event, same resolution criterion (NYK wins 2026 NBA Finals championship). Highest combined volume pair (Kalshi $24.8M + Polymarket $16.0M). Polymarket tokens were originally stored as truncated literals ('20257190540...') during Phase 2 curation due to a copy-paste error from a screenshot; this caused every NYK Polymarket query from Phase 3-5 to return 404, which was mis-interpreted as venue liquidity withdrawal. Full tokens restored 2026-05-26 after verification against Polymarket CLOB and Gamma API."
