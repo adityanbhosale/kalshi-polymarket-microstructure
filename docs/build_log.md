@@ -214,3 +214,67 @@ mistake). Files left intact on disk; `git rm --cached` only.
 
 **Tests:** still 51/51 green; no source code changed in this addendum
 (direction correction is analysis-only).
+
+### EXP-3b — fee-tier sensitivity sweep (2026-05-28)
+With the direction-correct engine in place, parameterize the fee tier
+and ask: does *takeable* cross-venue arb appear below the retail tier?
+
+`scripts/exp3b_fee_sweep.py` runs the D.2 snapshot through four tiers
+on the direction-enforced take-take path (`compute_executable_arb_direct`
+with a per-tier `FeeContext`):
+
+1. **retail** — corrected baseline (K parabolic 7c·C·(1−C), PM
+   category 3–4%).
+2. **pm_rebate** — retail taker + PM 25% maker rebate active.
+   Take-take column is identical to retail (rebate only enters on
+   add-side legs); LP column changes.
+3. **institutional** — counterfactual 0.30% taker / 0.20% maker
+   rebate flat on both venues (QCX/CME-style).
+4. **zero** — theoretical zero-fee floor.
+
+Output: `data/processed/exp3b_fee_sweep.md`.
+
+**Findings (PROVISIONAL pending EXP-3c multi-snapshot sweep):**
+- **Takeable count by tier:** retail 0/15 → pm_rebate 0/15 →
+  **institutional 8/15** → zero 8/15. The fee cliff is between
+  retail and institutional, *not* between institutional and zero.
+- The 8 takeable markets at institutional are exactly the 8 with a
+  crossed book at the snapshot. Lowering fees further to zero adds
+  zero new markets — the 7 non-crossed names stay $0 takeable at any
+  fee. Fees can't conjure a cross.
+- **~$73 total executable @ institutional** (~$93 @ zero); Peru
+  (`pe_rpal` $39.76) and Colombia (`co_aesp` $23.33) drive the
+  headline. These are *genuinely* takeable — both legs cross-side,
+  instant lock — not the flow-contingent LP edges that EXP-3a's
+  direction-blind Scenario D had assigned the same magnitudes to.
+- **New market `nba_finals_nyk` joins the takeable set** at
+  institutional ($1.13, 282c). NYK wasn't in EXP-3a's C/D flip list
+  (its 0.4c crossed spread was too tight for the retail/D scenarios
+  with the books it had); at 0.30% taker the round-trip fee
+  (~0.17c) clears the 0.4c paper edge.
+- **LP column observation:** activating the PM 25% maker rebate
+  flips `intl_president_co_aesp` from −0.000c to +0.670c per
+  contract — the rebate has real magnitude for an LP strategy on
+  central-priced (≈ 0.5) politics markets, even though it leaves
+  the takeable column untouched.
+
+**Caveats:** single snapshot (Peru reflects the pre-14:00Z regime
+per `exp3a_peru_depth_check.md`); institutional 0.30%/0.20% is
+counterfactual (neither venue offers it today, this is a
+sensitivity boundary not a quote); adverse selection / queue
+priority not modeled (exclusive-fill assumption); the sweep
+characterizes what fee unlocks the *existing* crossed subset, it
+does not discover new arbs.
+
+**Lean-relevant reframing:** combining EXP-3a + EXP-3b, the
+project's headline is now precise: *no takeable cross-venue arb at
+retail fees on any of the 15 markets; an institutional 0.30% tier
+would unlock takeable arb on every crossed-book market in the
+panel; the LP edge (flow-contingent) is real at every tier and is
+enhanced by PM maker rebates on central-priced names.* All three
+statements are simultaneously true and were not separable before
+the fee engine fix.
+
+**Tests:** 51/51 green; no source code changed (EXP-3b is a script
+that parameterizes the existing engine, no `fees.py` / `arb.py`
+edits).
