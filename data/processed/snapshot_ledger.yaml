@@ -31,4 +31,21 @@
   okc_discrepancy_cents: 0.0
   nyk_polymarket_yes_status: '404'
   cle_polymarket_status: '404'
-  notes: Both venues now price OKC at 0.455 (down 3 cents from prior snapshot); convergence holds. NYK YES Polymarket still 404. New observation - CLE Polymarket YES book also 404'd this run (was active during Phase 3). Two of three Polymarket books now de-listed.
+  notes: Both venues now price OKC at 0.455 (down 3 cents from prior snapshot); convergence
+    holds. NYK YES Polymarket still 404. New observation - CLE Polymarket YES book
+    also 404'd this run (was active during Phase 3). Two of three Polymarket books
+    now de-listed.
+- timestamp_utc: '2026-05-26T20:54:50.706060+00:00'
+  source: compute_arb_fresh
+  okc_kalshi_mid: 0.455
+  okc_polymarket_yes_mid: 0.455
+  okc_discrepancy_cents: 0.0
+  nyk_polymarket_yes_status: active
+  notes: Auto-appended by compute_arb.py --fresh
+- timestamp_utc: '2026-05-28T02:31:50.163418+00:00'
+  source: compute_arb_fresh
+  okc_kalshi_mid: 0.565
+  okc_polymarket_yes_mid: 0.575
+  okc_discrepancy_cents: 1.0000000000000009
+  nyk_polymarket_yes_status: active
+  notes: Auto-appended by compute_arb.py --fresh
