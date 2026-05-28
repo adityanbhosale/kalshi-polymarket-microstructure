@@ -278,3 +278,60 @@ the fee engine fix.
 **Tests:** 51/51 green; no source code changed (EXP-3b is a script
 that parameterizes the existing engine, no `fees.py` / `arb.py`
 edits).
+
+### EXP-3c — multi-snapshot persistence (2026-05-28)
+Convert the EXP-3b single-snapshot $73-at-institutional result into a
+frequency-characterized one across the full E.1 daemon history.
+
+`scripts/exp3c_persistence.py` walks 13,960 (market × snapshot)
+records from `data/raw/timeofday/` — 1,745 distinct 30-second
+timestamps over ~14.5h (2026-05-28T04:01Z → 18:46Z) — for the 8
+EXP-3b takeable-subset markets. For each snapshot, reconstructs
+full orderbooks from gzipped raw dumps and runs the direction-
+enforced take-take walker at the institutional (0.30% taker flat)
+tier. Output: `data/processed/exp3c_persistence.{md,csv}`,
+`figures/exp3c_crossed_by_hour.png`,
+`figures/exp3c_correlation_heatmap.png`.
+
+**Findings (PROVISIONAL pending adverse-selection / queue-priority
+modeling):**
+- **100% of snapshots have ≥1 of the 8 markets crossed** at
+  institutional fees. Median total takeable $ when something is
+  crossed: **$190.82** (mean $189.79, max $407.48). Excluding
+  `nyk` (which dominates): median **$17.45**.
+- **Persistence verdicts:** 5 PERSISTENT (`nyk`, `kelce`,
+  `co_pval`, `pe_rpal`, `la_kbas`); 2 INTERMITTENT (`kr_oseh`,
+  `arod`); 1 RARE (`co_aesp`); 0 SNAPSHOT-ONLY. `co_aesp`'s D.2
+  2c-paper $23 figure does **not** replicate intraday — only 4.3%
+  of subsequent snapshots are crossed (72.8% in the 04Z hour only,
+  then 0% for the rest of the window).
+- **Cross-market correlation:** median |corr| across 15 pairs
+  (excluding always-crossed `nyk`/`kelce`) = **0.15**. Edges are
+  largely independent, not one liquidity regime. Strongest positive
+  `kr_oseh`↔`co_pval` (+0.38); strongest negative `co_aesp`↔
+  `co_pval` (−0.39).
+- **Time-of-day:** `co_aesp` shows the cleanest TOD signal (04Z
+  only). `arod` high in 04Z–07Z, drops 09Z–11Z, partial recovery
+  13Z–16Z. See `figures/exp3c_crossed_by_hour.png`.
+
+**Adverse-selection caveat (load-bearing):** `nyk` is 100%
+crossed for the entire 14.5h window at median $165.89/snapshot
+(max $406.35). No real institutional arbitrageur with 0.30% access
+would let that persist for seconds, much less hours. Either (a) no
+actor currently has the 0.30%/0.20% access modeled, or (b) the
+resting K bid 0.30 / PM ask 0.285 are informed quotes and lifting
+them is adversely selected. The exclusive-fill assumption is the
+load-bearing one for all headline dollar figures. **All EXP-3c
+dollar magnitudes are PROVISIONAL pending adverse-selection /
+queue-priority modeling.**
+
+**Lean-relevant update:** EXP-3b's "institutional tier unlocks
+takeable arb on every crossed-book market" is confirmed as a
+*structural* finding (crossed books persist), but the *economic*
+magnitude and exploitability remain unvalidated. The project
+headline is now: *no takeable arb at retail; crossed-book edges
+exist at institutional fees but may be adversely selected; LP edge
+(flow-contingent) is real at every tier.*
+
+**Tests:** 51/51 green; no source code changed (EXP-3c is analysis
+script only).
