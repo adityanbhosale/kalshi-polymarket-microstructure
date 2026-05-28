@@ -335,3 +335,46 @@ exist at institutional fees but may be adversely selected; LP edge
 
 **Tests:** 51/51 green; no source code changed (EXP-3c is analysis
 script only).
+
+### Stage-1 closure (post-EXP-3a/b/c + fee-tier reality check) (2026-05-28)
+Stage-1 question: *is there takeable cross-venue arbitrage between
+Kalshi and Polymarket on the curated panel?* Answer: **no, at any
+accessible fee tier.**
+
+**Fee-tier sweep (EXP-3a/b/c, consolidated):**
+- **Retail (corrected):** 0/15 takeable. Kalshi parabolic
+  7c·C·(1−C) + Polymarket category 3–4% taker exceeds the
+  at-the-touch crossed spread on every market in the panel.
+- **PM maker-rebate active:** 0/15 takeable (rebate affects
+  add-side LP only; take-take path unchanged).
+- **Institutional 0.30% taker / 0.20% maker rebate:** both venues
+  offer **no such tier** (verified by external check 2026-05-28).
+  EXP-3b/3c institutional and zero-fee tiers are **counterfactual
+  sensitivity bounds**, not accessible execution paths.
+- **Zero-fee floor:** 8/15 crossed at the D.2 snapshot (the 8 with
+  a crossed book); 7 non-crossed stay $0 at any fee. Fees can't
+  conjure a cross.
+
+**Persistence (EXP-3c):** of the 8 zero-fee crossed markets,
+`nyk` and `kelce` are persistently crossed for the full 14.5h
+daemon window (100% of snapshots). That persistence is itself
+evidence the displayed depth is **not freely takeable** — informed
+quotes / adverse selection — because no actor with the modeled fee
+access exists on either venue. The exclusive-fill dollar figures
+from EXP-3b/3c are structural upper bounds, not realized PnL.
+
+**LP edges (EXP-3a direction-corrected):** 8 markets show
+flow-contingent provideable spread (maker on add-side only; cross-
+side legs pay taker). PM maker rebate flips `co_aesp`'s LP edge
+from ~0c to +0.67c per contract on central-priced politics names.
+These are liquidity-provision edges, not arbitrage.
+
+**Live theses going forward:**
+- **EXP-12** — liquidity provision (flow-contingent LP edges,
+  PM maker rebate upside, queue/fill modeling).
+- **EXP-4** — latency / lead-lag (cross-venue price discovery,
+  event-window overlay from F.1 harness).
+
+**Arb-as-taking-the-cross is dead** for Stage-1. The project pivots
+from "find executable arb" to "characterize microstructure edges
+(LP + latency) that survive fees and adverse selection."
