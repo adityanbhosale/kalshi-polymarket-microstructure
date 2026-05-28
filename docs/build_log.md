@@ -167,3 +167,50 @@ UPDATE" for a deliberate later pass.
 **Tests:** 51/51 green (6 prior + 45 new in `tests/test_fees.py`).
 `tests/test_normalize.py::test_fees_directional` verified independently
 after the `arb.py` refactor.
+
+### EXP-3a addendum — direction correction (2026-05-28, post-review)
+Reviewer caught a category error in Scenarios C and D: the
+`execution_mode='maker'` fee was applied to whichever venue the
+FeeContext named, regardless of which side of the cross the trade had
+to hit. On a crossed book the natural take-take execution is taker on
+BOTH legs; maker pricing is only available on the side a strategy ADDS
+liquidity to (post passive, wait for incoming flow), not the side it
+crosses. The original C/D walker also reported dollar figures tied to
+the contra-venue's resting depth — but a maker can't fill against that
+depth at maker rates, only by attracting flow to their post.
+
+`scripts/exp3a_direction_correction.py` reclassifies each of the 8
+flips (1 C + 7 D) per leg as add-side (maker-eligible) or cross-side
+(taker-forced), recomputes per-contract edges, and re-verdicts under
+direction enforcement. Output:
+`data/processed/exp3a_direction_correction.md`.
+
+**Findings (PROVISIONAL pending EXP-3b fee-tier sweep):**
+- **0 takeable, 8 flow-contingent, 0 fees-bind.** None of the 8
+  original flips survive as genuinely takeable arb. Every C/D flip
+  required at least one add-side leg; the per-contract edges are real
+  (PM 4% → 0% maker, K parabolic → 0c for quadratic markets) but
+  extracting them requires posting passive on PM (or K) and being
+  filled by incoming flow, not lifting contra-venue depth.
+- The honest cross-venue *arbitrage* count on the D.2 snapshot is
+  **0/15** — matches Scenario B (corrected taker). The C/D winners
+  quantify a *liquidity-provision* edge, not an arbitrage edge.
+- Headline dollar figures from the original direction-blind D ($50.59
+  Peru, $30.23 Colombia AESP, etc.) were category errors: they modeled
+  the LP as also sweeping the contra-venue's resting depth at maker
+  rates. Peru's $50.59 is killed by direction enforcement
+  *independently* of the regime-shift caveat from
+  `exp3a_peru_depth_check.md`. Both corrections kill the number.
+- Lean-relevant: this reframes the project's headline from "no
+  takeable arb because of fees" to "no takeable arb because of fees;
+  LP edge exists at 0.1c–2.7c per contract on a flow-contingent
+  basis." Both are no-arbitrage findings; the second one is more
+  actionable for a market-making thesis.
+
+**.gitignore:** added `data/processed/timeofday_poll.csv` and
+`data/processed/event_*_poll.csv` (E.1 daemon + F.1 harness live
+outputs; these grew continuously into the repo and were tracked by
+mistake). Files left intact on disk; `git rm --cached` only.
+
+**Tests:** still 51/51 green; no source code changed in this addendum
+(direction correction is analysis-only).
