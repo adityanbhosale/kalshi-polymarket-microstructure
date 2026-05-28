@@ -6,7 +6,9 @@ This is an empirical cross-venue microstructure analysis of prediction markets o
 
 ## Headline findings
 
-**1. Paper discrepancies are real but small.** Across the three curated NBA Finals markets, observed cross-venue mid-price discrepancies ranged from 0.0¢ to 1.0¢. These exist at the level of fair-value disagreement between venues but are well below the conservative fee threshold (~3¢ all-in for a 50¢ contract: $0.02/contract Kalshi execution + 2% Polymarket taker).
+**1. Paper discrepancies are real but small.** Across the three curated NBA Finals markets, observed cross-venue mid-price discrepancies ranged from 0.0¢ to 1.0¢. These exist at the level of fair-value disagreement between venues but are well below the conservative fee threshold. No takeable cross-venue arb exists at any accessible fee tier on Kalshi/Polymarket. Under corrected fees (Kalshi parabolic 7¢×C×(1−C), Polymarket category-dependent 3-4%), 0 of 15 markets show takeable arb. Direction-enforced maker scenarios show 8 markets with provideable spread, but capturing it requires resting passive and waiting for incoming flow — an LP edge, not an arb edge. A counterfactual sweep finds that takeable arb would appear at ~0.30% taker / 0.20% maker rebate fees (8 markets, ~$73/snapshot), but neither venue offers this tier to any market participant as of 2026-05-28.
+
+
 
 **2. Cross-venue prices converge observably without explicit arb.** The OKC market's paper discrepancy decayed from 1.00¢ → 0.50¢ → 0.00¢, then held at 0.00¢ across a second confirming snapshot, over ~22 hours total (see hero figure above). No executable arb fired during this period — paper edge never exceeded the fee threshold — yet the venues equilibrated to identical mids and stayed there. Market makers on at least one venue are paying attention to the other.
 
@@ -46,7 +48,12 @@ Full mapping in `markets.yaml`. Curated 2026-05-25.
 
 **Microstructure metrics.** Per book: best bid/ask, simple and size-weighted mids, absolute and relative spread, depth at top-of-book, depth within ±1¢ and ±5¢ of mid, populated price-level counts. See `src/pm_micro/microstructure.py`.
 
-**Arb computation.** Three layers (paper mid-discrepancy, naive crossed-book, executable after fees) × two structures (direct, synthetic). Fee model is intentionally conservative: 2% Polymarket taker fee (rebates ignored), $0.02/contract Kalshi all-in (CFTC + execution). Real fees may be lower with maker rebates or volume tiers. See `src/pm_micro/arb.py`.
+**Arb computation.** Three layers (paper mid-discrepancy, naive crossed-book, executable after fees) × two structures (direct, synthetic). Fee model uses live per-market API rates (Kalshi feeSchedule.rate, Polymarket feeType). Direction-enforced: maker fees only apply to add-side legs; cross-side legs pay taker regardless of execution mode. No maker rebate assumed by default (modeled as upside, off by default).
+
+Fee model is calibrated to live API rates per market, both venues, both execution modes, with direction enforcement. Adverse-selection / queue-priority are NOT modeled — displayed depth is treated as exclusively fillable. This is the load-bearing remaining assumption on the LP-edge dollar figures.
+
+
+See `src/pm_micro/arb.py`.
 
 ## Limitations
 

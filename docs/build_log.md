@@ -378,3 +378,47 @@ These are liquidity-provision edges, not arbitrage.
 **Arb-as-taking-the-cross is dead** for Stage-1. The project pivots
 from "find executable arb" to "characterize microstructure edges
 (LP + latency) that survive fees and adverse selection."
+
+> _Note: the formal Stage-1 closure below supersedes this interim
+> summary; both retained per append-only discipline._
+
+## Stage-1 closure — no takeable cross-venue arb at accessible fee tiers
+**Date:** 2026-05-28
+**Builds:** EXP-3a (fee correction + direction enforcement), EXP-3b (fee-tier
+sweep), EXP-3c (persistence), external fee-tier check.
+
+**Result:** No takeable cross-venue arbitrage exists on Kalshi/Polymarket
+at any accessible fee tier.
+- Retail (corrected, taker): 0/15 markets.
+- PM maker rebate active: 0/15 markets.
+- Institutional (0.30% taker / 0.20% rebate): 8/15 markets crossed in single
+  snapshot, $73 takeable; persistence sweep confirmed 5 PERSISTENT / 2
+  INTERMITTENT / 1 RARE / 0 snapshot-only across 14.5h.
+- External check 2026-05-28: neither Kalshi nor Polymarket offers a 0.30%
+  fee tier to any participant. Institutional and zero-fee scenarios are
+  counterfactual.
+
+**Interpretation:** The persistence of nyk's $165 median crossed spread for
+14h is itself evidence the displayed depth is not freely takeable — no
+actor with the modeled fee access exists, so the cross sits. The load-
+bearing assumption on all LP-edge dollar figures is exclusive-fill at
+displayed depth (adverse selection / queue priority NOT modeled).
+
+**Live edges (LP / flow-contingent, EXP-3a direction-corrected):** 8 markets
+show provideable spread under direction-enforced maker mode. PM rebate
+activation flips co_aesp's LP edge from ~0 to +0.67c per contract,
+illustrating real magnitude for LP strategies on central politics markets.
+
+**Forward theses:**
+- EXP-12 (liquidity provision) — 8 concrete provideable-spread markets as
+  anchor. Agent is market-making + inventory, not arb-taking.
+- EXP-4 (latency / lead-lag) — NYK confirmed Kalshi-leads-Polymarket; June
+  3 / May 31 Colombia capture is second independent test. Edge does not
+  require fee-tier access.
+
+**Killed:**
+- Cross-venue arb-as-taking-the-cross thesis at retail and at any accessible
+  tier.
+- EXP-1 (trader sim) as originally specified — would simulate a dead
+  strategy. Could be re-scoped as LP sim later.
+- EXP-10 (triangular/synthetic arb) — same execution constraints; deprioritized.
