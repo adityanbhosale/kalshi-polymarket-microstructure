@@ -79,5 +79,9 @@ data/raw/timeofday/*
 !data/raw/timeofday/.gitkeep
 # launchd-supervised poller logs (out/err); rotate manually.
 logs/
+# E.1 daemon + F.1 harness live outputs (CSV grows continuously / per-event).
+# Untracked because they're machine-local artifacts, not source of truth.
+data/processed/timeofday_poll.csv
+data/processed/event_*_poll.csv
 .ipynb_checkpoints/
 .ruff_cache/
