@@ -1,41 +1,121 @@
-"""Cross-venue discrepancy and executable arbitrage computation."""
+"""Cross-venue discrepancy and executable arbitrage computation.
+
+Fee assumptions live in `pm_micro.fees` after the EXP-3a correction
+(2026-05-28). This module's `apply_fee` is now a thin wrapper that
+delegates per-venue and per-execution-mode pricing to the parabolic
+Kalshi / category-dependent Polymarket models in `fees.py`. Callers
+that don't pass `pm_category` / `kalshi_multiplier` / `execution_mode`
+fall back to the pre-EXP-3a constants (Kalshi $0.02 flat at midprice,
+Polymarket 2% flat), preserving backward compatibility with the
+existing test suite and `scripts/compute_arb.py`.
+"""
 
 from dataclasses import dataclass
 
+from .fees import kalshi_fee, polymarket_fee
 from .normalize import NormalizedBook, PriceLevel
 
-# =========================================================================
-# FEE MODEL (conservative; documented assumptions)
-# =========================================================================
-# Polymarket: maker orders earn rebates (treated as 0 here for conservatism);
-#             taker orders pay ~2% of notional.
-# Kalshi:     $0.01/contract execution fee + CFTC fee (~$0.01/contract).
-#             Treated as $0.02/contract total. No maker rebates.
-# These are intentionally conservative — real fees may be lower with maker
-# rebates, volume tiers, etc. Document this in the README.
-
-POLYMARKET_TAKER_FEE_RATE = 0.02    # 2% of notional
-POLYMARKET_MAKER_FEE_RATE = 0.0     # rebate ignored
-KALSHI_PER_CONTRACT_FEE = 0.02      # dollars per contract, taker only
+# Pre-EXP-3a constants. Retained for tests/baselines that explicitly
+# need the stale values (see scripts/exp3a_fee_correction.py scenario A).
+# DO NOT USE in new code — pass category/multiplier through `apply_fee`
+# instead.
+POLYMARKET_TAKER_FEE_RATE = 0.02    # legacy 2% flat — superseded by fees.py
+POLYMARKET_MAKER_FEE_RATE = 0.0
+KALSHI_PER_CONTRACT_FEE = 0.02      # legacy $0.02 flat — superseded by fees.py
 
 
-def apply_fee(venue: str, side: str, price: float, size: float) -> float:
-    """
-    Return the all-in cost (for buys) or proceeds (for sells) per contract,
-    after fees. `side` is "buy" or "sell". Polymarket fees are proportional;
-    Kalshi fees are per-contract.
+def apply_fee(
+    venue: str,
+    side: str,
+    price: float,
+    size: float = 1.0,
+    *,
+    pm_category: str | None = None,
+    pm_rate: float | None = None,
+    kalshi_multiplier: float = 1.0,
+    kalshi_maker_fraction: float = 0.25,
+    execution_mode: str = "taker",
+    use_rebate: bool = False,
+    rebate_fraction: float | None = None,
+) -> float:
+    """Return effective per-contract price after fees.
+
+    Sign convention preserved from pre-EXP-3a: buys receive an upward
+    fee adjustment (cost > nominal), sells receive a downward adjustment
+    (proceeds < nominal). Magnitude now flows through `pm_micro.fees`:
+
+      * Kalshi: parabolic ``ceil(7 * kalshi_multiplier * C * (1-C))``
+        in cents, with maker mode at ``kalshi_maker_fraction`` of the
+        raw (pass 0 for ``fee_type='quadratic'`` markets).
+      * Polymarket: category-dependent ``rate * price`` notional;
+        maker mode is zero unless ``use_rebate=True``.
+
+    Defaults (all keyword args omitted) reproduce the historical
+    behavior at the midprice: Kalshi 2¢/contract at C=0.5,
+    Polymarket 2% of notional (because `pm_category=None` resolves to
+    the legacy 2% default — see `polymarket_rate_for_category`).
     """
     if venue == "polymarket":
-        if side == "buy":
-            return price * (1 + POLYMARKET_TAKER_FEE_RATE)
-        else:
-            return price * (1 - POLYMARKET_TAKER_FEE_RATE)
-    elif venue == "kalshi":
-        if side == "buy":
-            return price + KALSHI_PER_CONTRACT_FEE
-        else:
-            return price - KALSHI_PER_CONTRACT_FEE
+        rebate_kwargs = {}
+        if rebate_fraction is not None:
+            rebate_kwargs["rebate_fraction"] = rebate_fraction
+        fee_dollars = polymarket_fee(
+            price=price, size=1.0, side=side, category=pm_category,
+            rate=pm_rate, execution_mode=execution_mode,
+            use_rebate=use_rebate, **rebate_kwargs,
+        )
+        return price + fee_dollars if side == "buy" else price - fee_dollars
+    if venue == "kalshi":
+        fee_dollars = kalshi_fee(
+            price=price, size=1.0, side=side, multiplier=kalshi_multiplier,
+            execution_mode=execution_mode, maker_fraction=kalshi_maker_fraction,
+        )
+        return price + fee_dollars if side == "buy" else price - fee_dollars
     raise ValueError(f"Unknown venue: {venue}")
+
+
+@dataclass(frozen=True)
+class FeeContext:
+    """Per-market fee parameters threaded into the executable arb walkers.
+
+    Defaults reproduce the pre-EXP-3a behavior at midprice (Kalshi $0.02
+    at C=0.5 via the parabolic, Polymarket 2% via the legacy fallback in
+    `polymarket_rate_for_category(None)`). Pass explicit category /
+    multiplier / execution_mode to engage the corrected EXP-3a model.
+
+    For the "mixed" scenario (Kalshi taker / PM maker), set
+    `kalshi_execution_mode='taker'` and `pm_execution_mode='maker'`
+    independently. `pm_use_rebate=True` makes maker mode produce a
+    negative fee (rebate).
+    """
+    kalshi_multiplier: float = 1.0
+    kalshi_maker_fraction: float = 0.25
+    kalshi_execution_mode: str = "taker"
+    pm_category: str | None = None
+    pm_rate: float | None = None
+    pm_execution_mode: str = "taker"
+    pm_use_rebate: bool = False
+    pm_rebate_fraction: float | None = None
+
+    def apply(self, venue: str, side: str, price: float, size: float = 1.0) -> float:
+        """Call apply_fee with venue-appropriate kwargs."""
+        if venue == "kalshi":
+            return apply_fee(
+                venue, side, price, size,
+                kalshi_multiplier=self.kalshi_multiplier,
+                kalshi_maker_fraction=self.kalshi_maker_fraction,
+                execution_mode=self.kalshi_execution_mode,
+            )
+        if venue == "polymarket":
+            kw = dict(
+                pm_category=self.pm_category, pm_rate=self.pm_rate,
+                execution_mode=self.pm_execution_mode,
+                use_rebate=self.pm_use_rebate,
+            )
+            if self.pm_rebate_fraction is not None:
+                kw["rebate_fraction"] = self.pm_rebate_fraction
+            return apply_fee(venue, side, price, size, **kw)
+        raise ValueError(f"unknown venue: {venue}")
 
 
 # =========================================================================
@@ -193,12 +273,14 @@ def _walk_book_for_fillable(
     buy_venue: str,
     sell_venue: str,
     max_levels: int = 50,
+    fee_ctx: FeeContext | None = None,
 ) -> tuple[float, float, float, list[dict]]:
     """
     Walk both books level-by-level. At each step, fill the smaller side.
     Stop when the prices cross back (buy_price >= sell_price after fees).
     Returns: (fillable_size, gross_pnl, fees_paid, legs_detail)
     """
+    ctx = fee_ctx or FeeContext()
     fillable = 0.0
     gross_pnl = 0.0
     fees_paid = 0.0
@@ -215,8 +297,8 @@ def _walk_book_for_fillable(
         buy_price = buy_book_asks[buy_idx].price
         sell_price = sell_book_bids[sell_idx].price
 
-        buy_cost = apply_fee(buy_venue, "buy", buy_price, 1)
-        sell_proceeds = apply_fee(sell_venue, "sell", sell_price, 1)
+        buy_cost = ctx.apply(buy_venue, "buy", buy_price, 1)
+        sell_proceeds = ctx.apply(sell_venue, "sell", sell_price, 1)
 
         per_contract = sell_proceeds - buy_cost
         if per_contract <= 0:
@@ -251,15 +333,18 @@ def compute_executable_arb_direct(
     kalshi_yes_book: NormalizedBook,
     polymarket_yes_book: NormalizedBook,
     market_id: str,
+    fee_ctx: FeeContext | None = None,
 ) -> ExecutableArb:
     """Layer 3 direct: walk books across venues, apply fees, return realizable profit."""
     # Direction 1: buy Kalshi, sell Polymarket
     size1, gross1, fees1, legs1 = _walk_book_for_fillable(
-        kalshi_yes_book.asks, polymarket_yes_book.bids, "kalshi", "polymarket"
+        kalshi_yes_book.asks, polymarket_yes_book.bids, "kalshi", "polymarket",
+        fee_ctx=fee_ctx,
     )
     # Direction 2: buy Polymarket, sell Kalshi
     size2, gross2, fees2, legs2 = _walk_book_for_fillable(
-        polymarket_yes_book.asks, kalshi_yes_book.bids, "polymarket", "kalshi"
+        polymarket_yes_book.asks, kalshi_yes_book.bids, "polymarket", "kalshi",
+        fee_ctx=fee_ctx,
     )
 
     net1 = gross1 - fees1
@@ -284,6 +369,7 @@ def compute_executable_arb_synthetic(
     kalshi_yes_book: NormalizedBook,
     polymarket_no_book: NormalizedBook | None,
     market_id: str,
+    fee_ctx: FeeContext | None = None,
 ) -> ExecutableArb:
     """
     Layer 3 synthetic: buy YES_Kalshi + buy NO_Polymarket, walk both ask books
@@ -292,6 +378,7 @@ def compute_executable_arb_synthetic(
     if polymarket_no_book is None:
         return ExecutableArb(market_id, "synthetic", 0.0, 0.0, 0.0, 0.0, 0.0, [])
 
+    ctx = fee_ctx or FeeContext()
     fillable = 0.0
     gross_pnl = 0.0
     fees_paid = 0.0
@@ -308,8 +395,8 @@ def compute_executable_arb_synthetic(
         k_price = kalshi_yes_book.asks[k_idx].price
         p_price = polymarket_no_book.asks[p_idx].price
 
-        k_cost = apply_fee("kalshi", "buy", k_price, 1)
-        p_cost = apply_fee("polymarket", "buy", p_price, 1)
+        k_cost = ctx.apply("kalshi", "buy", k_price, 1)
+        p_cost = ctx.apply("polymarket", "buy", p_price, 1)
         combined_cost = k_cost + p_cost
         per_contract = 1.0 - combined_cost  # synthetic pays $1.00 at resolution
 

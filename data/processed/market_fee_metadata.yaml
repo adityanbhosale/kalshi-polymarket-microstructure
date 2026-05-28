@@ -1,0 +1,399 @@
+- market_id: nba_finals_okc
+  internal_category: sports_nba_finals
+  kalshi:
+    series_prefix: KXNBA
+    ticker: KXNBA-26-OKC
+    category_raw: Sports
+    fee_multiplier: 1.0
+    fee_type: quadratic_with_maker_fees
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.25
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0x22e7b5e35423e76842dd3a5e1a21d13793811080d5e7b2896d0c001bd5e97d54'
+    fee_type: sports_fees_v2
+    event_category: null
+    event_title: 2026 NBA Champion
+    api_rate: 0.03
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.03
+    resolved_category_key: sports
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: nba_finals_cle
+  internal_category: sports_nba_finals
+  kalshi:
+    series_prefix: KXNBA
+    ticker: KXNBA-26-CLE
+    category_raw: Sports
+    fee_multiplier: 1.0
+    fee_type: quadratic_with_maker_fees
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.25
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0x6b44bd667fad6cb5b3b68d8bd1055a038c77d9176dbd51f123879797cc3368a7'
+    fee_type: null
+    event_category: null
+    event_title: null
+    api_rate: null
+    api_taker_only: null
+    api_rebate_rate: null
+    resolved_rate: 0.02
+    resolved_category_key: _no_market
+    rate_source: fallback_no_market
+    ambiguous: true
+    ambiguity_notes: market not found on Gamma
+- market_id: nba_finals_nyk
+  internal_category: sports_nba_finals
+  kalshi:
+    series_prefix: KXNBA
+    ticker: KXNBA-26-NYK
+    category_raw: Sports
+    fee_multiplier: 1.0
+    fee_type: quadratic_with_maker_fees
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.25
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0x713641f745d71f6ec61f906237ffca3c8583f251e49384429a63ceb0ccdb2d37'
+    fee_type: sports_fees_v2
+    event_category: null
+    event_title: 2026 NBA Champion
+    api_rate: 0.03
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.03
+    resolved_category_key: sports
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: nba_finals_sas
+  internal_category: nba_finals
+  kalshi:
+    series_prefix: KXNBA
+    ticker: KXNBA-26-SAS
+    category_raw: Sports
+    fee_multiplier: 1.0
+    fee_type: quadratic_with_maker_fees
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.25
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0xb6b3d7a2037b3faa7e1306d741840d453432902d73cc9a146a035e40271eae73'
+    fee_type: sports_fees_v2
+    event_category: null
+    event_title: 2026 NBA Champion
+    api_rate: 0.03
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.03
+    resolved_category_key: sports
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: sports_retirement_arod
+  internal_category: sports_retirement
+  kalshi:
+    series_prefix: KXARODGRETIRE
+    ticker: KXARODGRETIRE-26
+    category_raw: Sports
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0x6930feafc2b096b6d9821f7f42a028b955dd8c71f1578f275b7c2314e01b9b31'
+    fee_type: sports_fees_v2
+    event_category: null
+    event_title: Will Aaron Rodgers retire before next season?
+    api_rate: 0.03
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.03
+    resolved_category_key: sports
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: sports_retirement_kelce
+  internal_category: sports_retirement
+  kalshi:
+    series_prefix: KXKELCERETIRE
+    ticker: KXKELCERETIRE-26
+    category_raw: Sports
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0x5d987aca8d5ed8dba661e10fea380b5b4ce9633a7f7112c7ee2667612675470a'
+    fee_type: sports_fees_v2
+    event_category: null
+    event_title: Will Travis Kelce retire before next season?
+    api_rate: 0.03
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.03
+    resolved_category_key: sports
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: us_senate_ak_mpel
+  internal_category: us_senate
+  kalshi:
+    series_prefix: KXAKSENATE
+    ticker: KXAKSENATE-26NOV03-MPEL
+    category_raw: Elections
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0x19d2ff72e389d190c183e6b114817301d29eba651d67d75a38ee201a05188fd9'
+    fee_type: politics_fees
+    event_category: null
+    event_title: Alaska Senate Election Winner
+    api_rate: 0.04
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.04
+    resolved_category_key: politics
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: intl_president_co_aesp
+  internal_category: intl_president
+  kalshi:
+    series_prefix: KXCOLOMBIAPRES
+    ticker: KXCOLOMBIAPRES-26-AESP
+    category_raw: Elections
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0xfbe85201ab2b4acff01cd5a3639039fc813d3448c64db081f70926bd9b9e74e9'
+    fee_type: politics_fees
+    event_category: null
+    event_title: Colombia Presidential Election
+    api_rate: 0.04
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.04
+    resolved_category_key: politics
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: intl_president_co_pval
+  internal_category: intl_president
+  kalshi:
+    series_prefix: KXCOLOMBIAPRES
+    ticker: KXCOLOMBIAPRES-26-PVAL
+    category_raw: Elections
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0xd6591e966aebf061547ef34cdf3494ed318969887c8b7fb53f10ed5d5461a547'
+    fee_type: politics_fees
+    event_category: null
+    event_title: Colombia Presidential Election
+    api_rate: 0.04
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.04
+    resolved_category_key: politics
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: intl_president_pe_kfuj
+  internal_category: intl_president
+  kalshi:
+    series_prefix: KXPERUPRES
+    ticker: KXPERUPRES-26-KFUJ
+    category_raw: Elections
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0xc4c3dbcc37a957a817599b0bf9fb5bd6b62b19210b0f527fec57cb75c7ed150a'
+    fee_type: politics_fees
+    event_category: null
+    event_title: Peru Presidential Election Winner
+    api_rate: 0.04
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.04
+    resolved_category_key: politics
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: intl_president_pe_rpal
+  internal_category: intl_president
+  kalshi:
+    series_prefix: KXPERUPRES
+    ticker: KXPERUPRES-26-RPAL
+    category_raw: Elections
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0x2cd24d17f5680dc6e7b7d67c712a223ae85550745597e81bd2d2b8d073443951'
+    fee_type: politics_fees
+    event_category: null
+    event_title: Peru Presidential Election Winner
+    api_rate: 0.04
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.04
+    resolved_category_key: politics
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: intl_president_r1_co_icas
+  internal_category: intl_president_round1
+  kalshi:
+    series_prefix: KXCOLOMBIAPRESR1
+    ticker: KXCOLOMBIAPRESR1-26MAY31-ICAS
+    category_raw: Elections
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0xc00920db6f5e84821a61bd31578499bbc9bd125949572b589b7a9e4b0f13bad3'
+    fee_type: politics_fees
+    event_category: null
+    event_title: ' Colombia Presidential Election 1st round winner?'
+    api_rate: 0.04
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.04
+    resolved_category_key: politics
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: intl_mayor_kr_oseh
+  internal_category: intl_mayor
+  kalshi:
+    series_prefix: KXSEOULMAYOR
+    ticker: KXSEOULMAYOR-26JUN03-OSEH
+    category_raw: Elections
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0xc587bda904f031a973ad3cb57128ca011bfab0f45e6cb3734ed2227c4d4be419'
+    fee_type: politics_fees
+    event_category: null
+    event_title: 2026 Seoul Mayoral Election Winner
+    api_rate: 0.04
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.04
+    resolved_category_key: politics
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: us_mayor_la_kbas
+  internal_category: us_mayor
+  kalshi:
+    series_prefix: KXMAYORLA
+    ticker: KXMAYORLA-26-KBAS
+    category_raw: Elections
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0x0c9ada12c527451fbdd43c0397a8a006b8aaf2a01567ae069d37220b51937595'
+    fee_type: politics_fees
+    event_category: null
+    event_title: Los Angeles Mayoral Election
+    api_rate: 0.04
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.04
+    resolved_category_key: politics
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: us_mayor_la_rhua
+  internal_category: us_mayor
+  kalshi:
+    series_prefix: KXMAYORLA
+    ticker: KXMAYORLA-26-RHUA
+    category_raw: Elections
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0xcc88b1c476a687f4d21abfd17f8ea957b58f2d597542f8bb2351a90fe50dc64d'
+    fee_type: politics_fees
+    event_category: null
+    event_title: Los Angeles Mayoral Election
+    api_rate: 0.04
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.04
+    resolved_category_key: politics
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
+- market_id: ma_acquisition_wb_psky
+  internal_category: ma_acquisition
+  kalshi:
+    series_prefix: KXTAKEOVERACQWB
+    ticker: KXTAKEOVERACQWB-27JUN30-PSKY
+    category_raw: Financials
+    fee_multiplier: 1.0
+    fee_type: quadratic
+    taker_multiplier_base: 7.0
+    maker_fraction: 0.0
+    source: kalshi_series_api
+  polymarket:
+    condition_id: '0xa71785ae27eeaf2a9f7adf8f4f0d7db11e773fa2602b28c55399d31e91c3f2f0'
+    fee_type: tech_fees
+    event_category: null
+    event_title: Who will close Warner Bros. acquisition?
+    api_rate: 0.04
+    api_taker_only: true
+    api_rebate_rate: 0.25
+    api_fees_enabled: true
+    resolved_rate: 0.04
+    resolved_category_key: tech
+    rate_source: polymarket_gamma_feeSchedule
+    ambiguous: false
+    ambiguity_notes: null
