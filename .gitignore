@@ -72,5 +72,12 @@ Thumbs.db
 .venv/
 data/raw/*
 !data/raw/.gitkeep
+# Keep the timeofday/ directory tracked (via its .gitkeep) but exclude the
+# gzipped raw dumps the E.1 poller writes inside it.
+!data/raw/timeofday/
+data/raw/timeofday/*
+!data/raw/timeofday/.gitkeep
+# launchd-supervised poller logs (out/err); rotate manually.
+logs/
 .ipynb_checkpoints/
 .ruff_cache/

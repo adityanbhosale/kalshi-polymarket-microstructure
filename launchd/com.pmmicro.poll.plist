@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  com.pmmicro.poll — supervises scripts/poll_timeofday.py for Build E.1.
+
+  INSTALL (run once):
+      cp launchd/com.pmmicro.poll.plist ~/Library/LaunchAgents/
+      launchctl load   ~/Library/LaunchAgents/com.pmmicro.poll.plist
+
+  CHECK STATUS:
+      launchctl list | grep pmmicro
+      tail -f logs/poll.err     # one line per cycle (n_ok / n_err / elapsed)
+      uv run python scripts/check_poll_health.py
+
+  STOP:
+      launchctl unload ~/Library/LaunchAgents/com.pmmicro.poll.plist
+
+  Notes:
+   * `caffeinate -i` keeps the process running on battery without forcing
+     the display awake — important for the time-of-day study because it
+     must collect overnight too.
+   * KeepAlive=true restarts the daemon on crash. Combined with the
+     poller's own null-row-on-failure handling, the data series is
+     resilient to (a) per-call API failures, (b) per-cycle exceptions,
+     and (c) full-process death.
+   * StandardOut / StandardError go to <repo>/logs/. The repo's
+     `.gitignore` excludes that directory. Rotate manually if it grows.
+   * Hard-coded paths to /Users/adityabhosale/... and
+     /Users/adityabhosale/.local/bin/uv assume the project lives where
+     the launchd agent expects. Update both places if you move the
+     repo or your `uv` install.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+                       "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.pmmicro.poll</string>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/adityabhosale/Downloads/Projects/kalshi-polymarket-microstructure</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/caffeinate</string>
+        <string>-i</string>
+        <string>/Users/adityabhosale/.local/bin/uv</string>
+        <string>run</string>
+        <string>python</string>
+        <string>scripts/poll_timeofday.py</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Don't busy-loop if the poller crashes immediately. Wait at least
+         15 s between restarts so a tight failure mode doesn't burn the
+         API rate budget. -->
+    <key>ThrottleInterval</key>
+    <integer>15</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/adityabhosale/Downloads/Projects/kalshi-polymarket-microstructure/logs/poll.out</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/adityabhosale/Downloads/Projects/kalshi-polymarket-microstructure/logs/poll.err</string>
+
+    <!-- Inherit a sensible PATH so /usr/bin/caffeinate and uv's child
+         python can find homebrew binaries if any wrapper needs them. -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/Users/adityabhosale/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <!-- Set explicit POLL_MAX_CYCLES=0 so the daemon runs forever; the
+             smoke-test wrapper overrides this in foreground. -->
+        <key>POLL_MAX_CYCLES</key>
+        <string>0</string>
+    </dict>
+</dict>
+</plist>
