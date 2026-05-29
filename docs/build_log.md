@@ -470,3 +470,42 @@ edge after fill probability and markout is near-zero or negative on 7/8
 markets.*
 
 **Tests:** 79/79 green (51 prior + 28 new in `tests/test_fills.py`).
+
+### EXP-12a-regime — regime-sliced markout (2026-05-28)
+Follow-on to EXP-12a: slice the 5min net markout by regime to test
+whether adverse selection is *conditional* — i.e. whether any market
+has an hour, catalyst window, or volatility state where net markout turns
+non-negative with enough fills to trust (≥20 genuine fills per leg).
+
+Script: `scripts/exp12a_regime.py`. Output:
+`data/processed/exp12a_regime.md`. Reuses `fills.py` markout primitives
+and EXP-12a window loaders; does not change the unconditional verdicts.
+
+**Findings:**
+- **0/8 markets have a tradeable regime.** Across 24 UTC hour bins +
+  low/high volatility splits with ≥20 fills per leg, **zero** show
+  non-negative net 5min markout. The conditional-LP hypothesis fails
+  on current data: adverse selection is **unconditional** within the
+  daemon window, not concentrated in avoidable hours or vol states.
+- **Hour-of-day slice underpowered:** no market clears ≥20 fills on
+  both legs in any single hour bin (fills too sparse across 24 bins on
+  one UTC date).
+- **Volatility slice:** only `co_pval` (96/25 high-vol, −0.633c) and
+  `kr_oseh` (79/25 high-vol, −0.785c) clear the fill floor; both firmly
+  negative. Where high-vol markout is evaluable, it is adverse.
+- **Catalyst proximity slice degenerate:** 0 fills within 2h of any
+  catalyst. Nearest events (Colombia 1st round 2026-05-31, Seoul
+  2026-06-03) are ≥2.5 days after the May 28 daemon window. Note:
+  `markets.yaml` `resolution_date` is year-offset (2027/2028); real
+  F.1 event dates used for slicing.
+
+**Thesis A (LP) — CLOSED** pending only near-catalyst data. Unconditional
+EXP-12a + regime slice together: cross-venue LP edge is adverse-selection-
+paid spread on 8/8 markets in all evaluable regimes. The lone EXP-12a
+REAL_EDGE (`co_aesp`) is not rescued by any regime. **The only remaining
+open question is near-catalyst LP behavior**, which requires the F.1
+dense captures (May 31 Colombia, June 3 Seoul) — not yet folded in.
+Until then, Thesis A is closed as "no actionable LP edge on current
+evidence." Forward thesis is **EXP-4 (latency / lead-lag)** only.
+
+**Tests:** 79/79 green; read-only analysis script only.
