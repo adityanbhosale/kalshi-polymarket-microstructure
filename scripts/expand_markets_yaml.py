@@ -201,8 +201,11 @@ def _kalshi_mid_dollars(market: dict) -> float | None:
 
 def _kalshi_resolution_date(market: dict) -> str | None:
     """Best-effort ISO date (YYYY-MM-DD) for the Kalshi resolution time."""
+    # Prefer expected_expiration_time: close_time/expiration_time on active
+    # markets is often a year-offset contract ceiling (2027/2028), not the
+    # actual event date. expected_expiration_time carries the real catalyst.
     dt = parse_iso_dt(
-        market.get("close_time") or market.get("expected_expiration_time")
+        market.get("expected_expiration_time") or market.get("close_time")
     )
     if dt is None:
         return None

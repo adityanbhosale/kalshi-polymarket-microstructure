@@ -25,7 +25,7 @@
     no_token_id: '44914465637297319816681463234953032477919413063019359633128421605039733545953'
     volume_at_curation: 13796699
   prob_bucket: central
-  resolution_date: '2028-06-29'
+  resolution_date: '2026-06-30T14:00:00+00:00'
   match_notes: Same event, same resolution criterion (OKC wins 2026 NBA Finals championship).
     Both markets trade through Finals series resolution. High-volume on both venues.
     Curated 2026-05-25.
@@ -43,7 +43,7 @@
     yes_token_orderbook_status: 404_delisted
     no_token_orderbook_status: 404_delisted
   prob_bucket: tail_low
-  resolution_date: '2026-05-26'
+  resolution_date: '2026-05-26T02:32:20+00:00'
   match_notes: Same event, same resolution criterion (CLE wins 2026 NBA Finals championship).
     Highest-volume-symmetric pair (Kalshi $18.5M ≈ Polymarket $18.6M). Curated 2026-05-25.
 - id: nba_finals_nyk
@@ -59,7 +59,7 @@
     volume_at_curation: 16044555
     no_token_orderbook_status: 404_delisted
   prob_bucket: mid_low
-  resolution_date: '2028-06-29'
+  resolution_date: '2026-06-30T14:00:00+00:00'
   match_notes: Same event, same resolution criterion (NYK wins 2026 NBA Finals championship).
     Highest combined volume pair (Kalshi $24.8M + Polymarket $16.0M). Polymarket tokens
     were originally stored as truncated literals ('20257190540...') during Phase 2
@@ -79,7 +79,7 @@
     no_token_id: '12636035070565821048178968461063687179393834041535317885287743395873720755118'
     volume_at_curation: 31134714
   prob_bucket: mid_low
-  resolution_date: '2028-06-29'
+  resolution_date: '2026-06-30T14:00:00+00:00'
   match_notes: 'D.1 discovery match (score=0.617): Kalshi ''Will the San Antonio win
     the 2026 Pro Basketball Finals?'' ↔ Polymarket ''Will the San Antonio Spurs win
     the 2026 NBA Finals?''.'
@@ -129,7 +129,7 @@
     no_token_id: '38274379050640062523611849065721372699838119672720475300345842413156391540232'
     volume_at_curation: 164101
   prob_bucket: central
-  resolution_date: '2027-11-03'
+  resolution_date: '2026-11-03'
   match_notes: 'D.1 discovery match (score=0.653): Kalshi ''Will Mary Peltola win
     the 2026 Alaska Senate race?'' ↔ Polymarket ''Will Mary Peltola win the Alaska
     Senate race in 2026?''.'
@@ -146,7 +146,7 @@
     no_token_id: '93119283163420984666329627600000273753909488383271496422725436610044958733622'
     volume_at_curation: 1731494
   prob_bucket: central
-  resolution_date: '2027-05-31'
+  resolution_date: '2026-05-31'
   match_notes: 'D.1 discovery match (score=0.676): Kalshi ''Will Abelardo de la Espriella
     win the next Colombian presidential election?'' ↔ Polymarket ''Will Abelardo de
     la Espriella  win the 2026 Colombian presidential election?''.'
@@ -163,7 +163,7 @@
     no_token_id: '85033408490054356469224638555921276992969532989623124901223739012644529258496'
     volume_at_curation: 1781534
   prob_bucket: tail_low
-  resolution_date: '2027-05-31'
+  resolution_date: '2026-05-31'
   match_notes: 'D.1 discovery match (score=0.672): Kalshi ''Will Paloma Valencia win
     the next Colombian presidential election?'' ↔ Polymarket ''Will Paloma Valencia
     win the 2026 Colombian presidential election?''.'
@@ -179,7 +179,7 @@
     no_token_id: '92827417009887627656279362525317849309821905918650547490799438436173703158107'
     volume_at_curation: 6977306
   prob_bucket: mid_high
-  resolution_date: '2027-04-12'
+  resolution_date: '2026-04-12T14:00:00+00:00'
   match_notes: 'D.1 discovery match (score=0.641): Kalshi ''Who will win the next
     Peruvian presidential election?'' ↔ Polymarket ''Will Keiko Fujimori win the 2026
     Peruvian presidential election?''.'
@@ -196,7 +196,7 @@
     no_token_id: '46581835831525280126714747999686373127429627947256474439860896007472960168455'
     volume_at_curation: 13353367
   prob_bucket: mid_low
-  resolution_date: '2027-04-12'
+  resolution_date: '2026-04-12T14:00:00+00:00'
   match_notes: 'D.1 discovery match (score=0.676): Kalshi ''Will Roberto Sánchez Palomino
     win the next Peruvian presidential election?'' ↔ Polymarket ''Will Roberto Sánchez
     Palomino win the 2026 Peruvian presidential election?''.'
@@ -213,7 +213,7 @@
     no_token_id: '14091653123981696098149612128638596487728756364185780258208900432349579261611'
     volume_at_curation: 890828
   prob_bucket: central
-  resolution_date: '2027-05-31'
+  resolution_date: '2026-05-31'
   match_notes: 'D.1 discovery match (score=0.682): Kalshi ''Will Iván Cepeda Castro
     win the first round of the 2026 Colombian presidential election?'' ↔ Polymarket
     ''Will Iván Cepeda Castro win the 1st round of the 2026 Colombian presidential
@@ -230,7 +230,7 @@
     no_token_id: '69119940120690198080427862456277899176151352667092917892731174838615809844766'
     volume_at_curation: 2198404
   prob_bucket: mid_low
-  resolution_date: '2027-06-03'
+  resolution_date: '2026-06-03'
   match_notes: 'D.1 discovery match (score=0.653): Kalshi ''Will Oh Se-hoon win the
     2026 Seoul mayoral election?'' ↔ Polymarket ''Will Oh Se-hoon win the 2026 Seoul
     Mayoral Election''.'
@@ -246,7 +246,7 @@
     no_token_id: '34469274651136131348321516150438492438660307886630693950137200696755429925073'
     volume_at_curation: 144574
   prob_bucket: central
-  resolution_date: '2027-06-02'
+  resolution_date: '2026-06-02T14:00:00+00:00'
   match_notes: 'D.1 discovery match (score=0.545): Kalshi ''Who will win Los Angeles
     Mayoral Election?'' ↔ Polymarket ''Will Karen Bass win the 2026 Los Angeles mayoral
     election?''.'
@@ -266,7 +266,7 @@
     no_token_id: '38248674398740465907017494828123330201005677228313433261541607935229244031739'
     volume_at_curation: 501740
   prob_bucket: tail_low
-  resolution_date: '2027-06-02'
+  resolution_date: '2026-06-02T14:00:00+00:00'
   match_notes: 'D.1 discovery match (score=0.542): Kalshi ''Who will win Los Angeles
     Mayoral Election?'' ↔ Polymarket ''Will Rae Huang win the 2026 Los Angeles mayoral
     election?''.'
@@ -287,7 +287,7 @@
     no_token_id: '12068609223027041437214952122316923930875444851110633205851320421601762942510'
     volume_at_curation: 463421
   prob_bucket: mid_high
-  resolution_date: '2027-07-01'
+  resolution_date: '2027-07-01T03:59:00+00:00'
   match_notes: 'D.1 discovery match (score=0.595): Kalshi ''Will Paramount''s takeover
     of Warner Brothers succeed Before July 2027?'' ↔ Polymarket ''Will Paramount close
     Warner Bros acquisition?''.'
