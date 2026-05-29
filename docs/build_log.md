@@ -422,3 +422,51 @@ illustrating real magnitude for LP strategies on central politics markets.
 - EXP-1 (trader sim) as originally specified — would simulate a dead
   strategy. Could be re-scoped as LP sim later.
 - EXP-10 (triangular/synthetic arb) — same execution constraints; deprioritized.
+
+### EXP-12a — fill-realism + adverse-selection markout (2026-05-28)
+Replace the load-bearing "exclusive-fill at displayed depth" assumption
+behind the EXP-3a/3b/3c LP-edge dollar figures with a probabilistic fill
+model + post-fill markout, calibrated on the full E.1 daemon history
+(~2,244 snapshots × 8 markets).
+
+New module: `src/pm_micro/fills.py` (fill-probability primitives, markout
+sign convention, minimal logistic regression). Script:
+`scripts/exp12a_fill_realism.py`. Output:
+`data/processed/exp12a_fill_realism.md`,
+`data/processed/exp12a_fill_summary.csv`,
+`data/processed/exp12a_markout_samples.csv`,
+`figures/exp12a_fill_prob_vs_distance.png`,
+`figures/exp12a_markout_by_market.png`.
+
+**Findings (PROVISIONAL pending regime-sliced markout analysis):**
+- **All 8 LP-edge markets show negative 5min net markout.** The cross-
+  venue LP "edge" is largely adverse-selection-paid spread, not free
+  money. Exclusive-fill figures from EXP-3a/3b/3c overstate realized
+  edge by ~1–2c/contract of markout plus a fill-probability haircut.
+- **Survivor count:** 1 REAL_EDGE / 2 MARGINAL / 3 ADVERSE-SELECTED /
+  2 SUB-FILL.
+  - **REAL_EDGE:** `co_aesp` only — gross +2.67c survives −1.67c markout
+    to +0.34c/contract adjusted, but **provisional**: only 4 genuine fill
+    events in the window (book crossed 4.3% of the time per EXP-3c).
+  - **MARGINAL:** `pe_rpal`, `kelce` — positive central adjusted edge but
+    below the 0.05c/contract floor.
+  - **ADVERSE-SELECTED:** `la_kbas` (most adverse: −1.98c net markout
+    eats +1.70c gross), `co_pval`, `nyk` (maker-fee-bind: gross −0.39c).
+  - **SUB-FILL:** `arod`, `kr_oseh` — P(both legs fill @5min) < 5%.
+- Fill model: logistic on `distance_c, queue_ahead, imbalance, vol_c,
+  days_to_cat`; `distance_c` dominates (|coef|≈1.4–1.6). P(fill) is an
+  upper bound (queue-depletion proxy over-counts at-touch fills).
+
+**Markout is unconditional** — not yet sliced by crossed/uncrossed regime,
+time-of-day, or catalyst proximity. A regime-sliced re-run (especially
+for `co_aesp`, which is crossed only 4.3% of the time) is the next
+disciplining step before treating any REAL_EDGE as actionable.
+
+**Lean-relevant update:** the LP thesis (EXP-12) survives only
+provisionally on one market with the widest gross edge; adverse selection
+is the default, not the exception. The honest LP headline is now: *flow-
+contingent provideable spread exists at the maker margin, but realized
+edge after fill probability and markout is near-zero or negative on 7/8
+markets.*
+
+**Tests:** 79/79 green (51 prior + 28 new in `tests/test_fills.py`).

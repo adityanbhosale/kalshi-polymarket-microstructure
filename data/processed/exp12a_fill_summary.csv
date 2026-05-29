@@ -1,0 +1,9 @@
+market,crossed,gross_edge_c,paper_spread_c,dist_buy_c,dist_sell_c,p_fill_30s,p_fill_5min,p_fill_30min,markout_net_mean_5min_c,markout_net_median_5min_c,markout_net_mean_30min_c,excl_fill_dollars,adj_optimistic,adj_central,adj_pessimistic,verdict,note
+arod,True,1.1382,1.1,1.0,5.5,0.0,0.0,0.0001,-0.6311,-0.25,0.4608,0.0114,0.0,0.0,0.0,SUB-FILL,P(both fill @5min)=0.0% < 5%
+kelce,True,0.221,0.2,0.05,1.5,0.3131,0.3316,0.387,-0.075,-0.05,0.0056,0.0022,0.0007,0.0005,0.0009,MARGINAL,positive but below real-edge floor after fill+markout
+co_aesp,True,2.67,2.0,0.5,0.5,0.323,0.3391,0.3909,-1.6667,-2.0,-1.6667,0.0267,0.0091,0.0034,0.0039,REAL_EDGE,survives fill discounting + markout [markout LOW-CONFIDENCE: only 4 genuine fill events in window — markout estimate noisy]
+co_pval,True,0.317,0.3,0.1,0.3,0.5244,0.5203,0.5275,-0.6518,-0.55,-0.9751,0.0032,0.0016,-0.0017,-0.0035,ADVERSE-SELECTED,markout (-0.652c) eats gross (+0.317c)
+pe_rpal,True,1.171,0.9,0.05,0.5,0.5389,0.5507,0.583,-1.1141,-0.775,0.3774,0.0117,0.0064,0.0003,0.009,MARGINAL,positive but below real-edge floor after fill+markout
+kr_oseh,True,1.19,1.0,2.0,0.5,0.0136,0.0164,0.0306,-0.9751,-1.0,-0.2583,0.0119,0.0002,0.0,0.0003,SUB-FILL,P(both fill @5min)=1.6% < 5%
+la_kbas,True,1.7,1.0,0.5,0.5,0.3146,0.3287,0.3769,-1.9792,-1.75,-1.2708,0.017,0.0056,-0.0009,0.0016,ADVERSE-SELECTED,markout (-1.979c) eats gross (+1.700c)
+nyk,True,-0.3855,0.4,0.05,1.0,0.0832,0.0988,0.1531,-0.6088,-0.675,-0.4235,-0.0039,-0.0004,-0.001,-0.0012,ADVERSE-SELECTED,gross maker edge ≤0 before markout (maker-fee-bind: NBA Kalshi maker fee exceeds the 0.4c spread)
