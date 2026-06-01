@@ -83,5 +83,7 @@ logs/
 # Untracked because they're machine-local artifacts, not source of truth.
 data/processed/timeofday_poll.csv
 data/processed/event_*_poll.csv
+# EXP-4b dual-venue websocket capture (live JSONL, machine-local).
+data/raw/ws_leadlag/**
 .ipynb_checkpoints/
 .ruff_cache/
