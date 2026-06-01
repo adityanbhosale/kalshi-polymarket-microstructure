@@ -10,28 +10,34 @@ Sources are cited inline after factual claims. Vendor marketing figures are incl
 
 ## 1. The measured starting point
 
-EXP-4b-symmetric `--calibrate` (2026-06-01, capture host) measured persistent HTTP RTT to each venue's public edge:
+EXP-4b-symmetric `--calibrate` measured persistent HTTP RTT to each venue's public edge from the same capture host on **two independent runs** under different network conditions:
 
-| Venue | Median RTT | p90 RTT | n |
-|---|---|---|---|
-| Kalshi (`api.elections.kalshi.com/trade-api/v2/exchange/status`) | 19.7 ms | 33.8 ms | 35 |
-| Polymarket (`clob.polymarket.com/ok`) | 95.0 ms | 109.9 ms | 35 |
+| Run | Date / context | Kalshi median / p90 | PM median / p90 | RTT differential (K−PM) | One-way differential (RTT/2) |
+|---|---|---|---|---|---|
+| 1 | 2026-05-31 night (committed) | 19.7 / 33.8 ms | 95.0 / 109.9 ms | **−75.4 ms** | **~37.7 ms** |
+| 2 | 2026-06-01 (post key rotation) | 36.6 / 45.0 ms | 106.7 / 116.3 ms | **−70.1 ms** | **~35.0 ms** |
 
-Median RTT differential (Kalshi − Polymarket): **−75.4 ms**. Under symmetric-path assumption (one-way ≈ RTT/2), implied **one-way differential ≈ 37.7 ms** — Kalshi's edge is closer to this host than Polymarket's. ([`data/processed/network_latency_calibration.md`](../data/processed/network_latency_calibration.md))
+Both runs: n=35 per venue; endpoints Kalshi `api.elections.kalshi.com/trade-api/v2/exchange/status`, Polymarket `clob.polymarket.com/ok`. ([`data/processed/network_latency_calibration.md`](../data/processed/network_latency_calibration.md))
+
+**Absolute RTTs are not stable; the differential is.** Kalshi median RTT moved **19.7 → 36.6 ms** between runs (~2×); Polymarket median moved **95.0 → 106.7 ms**. Those swings reflect time-of-day routing, ISP load, and other transient network conditions — snapshots of *this host's path to each edge*, not properties of the venues themselves.
+
+The **RTT differential** (Kalshi closer than Polymarket by how much) reproduced **−75.4 ms** and **−70.1 ms** — one-way **~35–38 ms** in both runs. That quantity is the **load-bearing structural figure**: it tracks the fixed geography (Polymarket **eu-west-2 / London** vs Kalshi **us-east-2 / Ohio**, Section 2), not local network luck. Debias lead-lag claims with the **differential**, not either run's absolute RTT in isolation.
+
+Two independent runs converging on the same differential is **stronger evidence** for the resolution floor than a single measurement: the ~100 ms bound below does not rest on one night's routing snapshot.
 
 ### ~100 ms resolution floor for sub-second lead-lag claims
 
-Any cross-venue lead observed on **local receive timestamps** must be debiased by this transport skew before attributing information flow. The practical resolution floor for sub-second lead-lag claims from this vantage is **~100 ms**, for three compounding reasons:
+Any cross-venue lead observed on **local receive timestamps** must be debiased by the **~35–38 ms one-way differential** before attributing information flow. The practical resolution floor for sub-second lead-lag claims from this vantage is **~100 ms** — unchanged under both calibration runs — for three compounding reasons:
 
-1. **Systematic offset (~38 ms one-way).** Even a perfectly synchronized clock pair would mis-attribute up to ~38 ms of "lead" to the closer venue. Observed leads smaller than this are within expected network bias, not evidence of information advantage.
+1. **Systematic offset (~35–38 ms one-way).** Even a perfectly synchronized clock pair would mis-attribute up to ~38 ms of "lead" to the closer venue (Kalshi). Observed leads smaller than this band are within expected network bias, not evidence of information advantage.
 
-2. **RTT jitter (~15 ms per venue at p90).** Kalshi p90−median spread is ~14 ms; Polymarket's is ~15 ms. Combined with asymmetric-path uncertainty (the calibration doc explicitly warns RTT/2 is an estimate, not ground truth), envelope uncertainty adds another ~20–40 ms.
+2. **RTT jitter (~10–15 ms per venue at p90 in both runs).** Run 1: Kalshi p90−median ~14 ms, Polymarket ~15 ms. Run 2: ~8 ms and ~10 ms respectively. Combined with asymmetric-path uncertainty (RTT/2 is an estimate, not ground truth), envelope uncertainty adds another ~20–40 ms.
 
 3. **Software clock jitter (unquantified here, likely tens of ms without PTP).** Local `time.time()` / OS scheduler jitter on a laptop or home connection is not hardware-timestamped. Without exchange-timestamp arbitration or PTP, receive-time comparisons inherit this noise on top of network jitter.
 
-**Rule of thumb:** an observed sub-second lead must exceed **~38 ms systematic offset + ~30–50 ms combined jitter envelope ≈ ~70–100 ms** before it clears network noise. Leads in the 10–50 ms range — the regime where HFT races live in equities — are **unresolvable** from this capture topology without infrastructure upgrades (Sections 3–4).
+**Rule of thumb:** an observed sub-second lead must exceed **~36 ms systematic offset (midpoint of both runs) + ~30–50 ms combined jitter envelope ≈ ~70–100 ms** before it clears network noise. Leads in the 10–50 ms range — the regime where HFT races live in equities — are **unresolvable** from this capture topology without infrastructure upgrades (Sections 3–4).
 
-Caveats from the calibration itself: HTTPS edge may differ from WebSocket ingress; server handling time is embedded in RTT; measurements are host- and time-specific. Re-run `--calibrate` from the actual capture host immediately before live sessions. ([`data/processed/network_latency_calibration.md`](../data/processed/network_latency_calibration.md))
+Caveats from the calibration method: HTTPS edge may differ from WebSocket ingress; server handling time is embedded in RTT; absolute RTTs vary run-to-run. Re-run `--calibrate` from the actual capture host immediately before live sessions; use the **fresh differential**, not stale absolute RTTs. ([`data/processed/network_latency_calibration.md`](../data/processed/network_latency_calibration.md))
 
 ---
 
