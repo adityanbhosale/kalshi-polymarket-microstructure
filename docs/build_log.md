@@ -509,3 +509,53 @@ Until then, Thesis A is closed as "no actionable LP edge on current
 evidence." Forward thesis is **EXP-4 (latency / lead-lag)** only.
 
 **Tests:** 79/79 green; read-only analysis script only.
+
+---
+
+## Build EXP-4b-symmetric — Authenticated Kalshi WS + symmetric capture (2026-06-01)
+**Goal:** Add a genuine authenticated Kalshi WEBSOCKET path for sub-second
+cross-venue lead-lag capture, while keeping the existing 1.5s REST poll as
+automatic degradation. Validate against PROD read-only credentials before
+NBA Finals G1 deploy (Wed Jun 3).
+
+**Implementation:**
+- `scripts/ws_leadlag.py`: hand-rolled RSA-PSS SHA256 signing (Kalshi docs
+  `sign_pss_text`; `kalshi-python` SDK not used — broken import in venv,
+  WS client fights our asyncio reconnect/heartbeat pattern). Authenticated
+  `orderbook_delta` on `wss://external-api-ws.kalshi.com/trade-api/ws/v2`.
+  Local book state from snapshot + deltas; best_bid/best_ask reconstruction
+  reuses `normalize_kalshi_orderbook` complementarity (bid-only → both sides).
+  WS-first via `kalshi_capture_task`; auto-degrades to `REST_POLL` on auth
+  rejection or repeated connect failure. Fresh re-auth headers on every
+  reconnect. `--calibrate` writes network-latency differential report.
+  Env-aware creds: `KALSHI_PROD_*` / `KALSHI_DEMO_*` with generic fallback;
+  inline key material supported (not just file path).
+- `tests/test_ws_leadlag.py`: +17 unit tests (book delta application,
+  complementarity reconstruction, signing, credential loading).
+- `data/processed/network_latency_calibration.md`: RTT sample from this host.
+
+**Validation (PROD read-only, not yet deployed live):**
+- Kalshi WS authenticates; `mode=WEBSOCKET` in STATUS; snapshot + deltas
+  across 8 markets; tz-aware timestamps; exchange_ts on deltas.
+- **WS book vs REST book:** MATCH on all sampled markets through a live
+  `co_aesp` price move (0.75/0.76 → 0.76/0.79) — delta-application logic
+  verified against reality, not just unit tests.
+- Kalshi WS `--test-reconnect`: re-auth + re-subscribe + resume (0.59s gap);
+  Polymarket path unaffected.
+- Forced bad-auth: HTTP 401 → `MODE_DEGRADE` → `REST_POLL`, no crash.
+- Polymarket WS path, heartbeat, append-only flush, graceful SIGINT unchanged.
+
+**Findings (PROVISIONAL until Wednesday's NBA Finals G1 capture):**
+- **Network differential (this host, 2026-06-01):** Kalshi RTT ~19.7 ms
+  median / 33.8 ms p90; Polymarket ~95.0 ms / 109.9 ms. Kalshi edge is
+  **~38 ms one-way closer** (RTT differential −75 ms → one-way −37.7 ms).
+- **Resolution floor for lead-lag claims:** sub-~100 ms apparent leads on
+  the local-receive clock are **network skew, not information flow** —
+  must subtract the ~38 ms one-way differential (plus PM p90 jitter ~110 ms)
+  before attributing venue A leading venue B. EXP-4/F.2 analysis must use
+  both this calibration and the exchange-timestamp cross-check.
+
+**Deploy target:** NBA Finals G1, Wed Jun 3 — symmetric WS capture ready;
+F.1 REST remains capture of record until clock-sync cross-check passes.
+
+**Tests:** 114/114 green (97 prior + 17 new).

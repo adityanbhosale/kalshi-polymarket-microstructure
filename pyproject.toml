@@ -16,6 +16,8 @@ dependencies = [
     "nbformat>=5.0",
     "pyyaml>=6.0",
     "rapidfuzz>=3.14.5",
+    "websockets>=16.0",
+    "cryptography>=48.0.0",
 ]
 
 [project.optional-dependencies]
