@@ -140,7 +140,7 @@ def make_figure(df: pd.DataFrame, s: dict) -> None:
     # Shade contiguous crossed runs (paper cross > 0), gap-aware.
     crossed = (df["paper_spread_c"] > 0).to_numpy()
     for (a, b) in crossed_runs(df["utc_ts"], crossed):
-        ax.axvspan(a, b, color=cross_fill, alpha=0.08, lw=0)
+        ax.axvspan(a, b, color=cross_fill, alpha=0.16, lw=0)
 
     # The pre-fee raw cross series, with line breaks across polling gaps.
     x, y = y_with_gaps(df)
@@ -148,23 +148,37 @@ def make_figure(df: pd.DataFrame, s: dict) -> None:
     ax.scatter(df["utc_ts"], df["paper_spread_c"], s=6, color=kalshi_blue,
                alpha=0.35, zorder=3, edgecolors="none")
 
-    # Median line + annotation (computed, not hardcoded).
+    # Median line + annotation in the flat mid-window band (computed, not hardcoded).
     med = s["median_cross_c"]
     ax.axhline(med, color=median_red, lw=1.8, ls="--", zorder=4)
+    ann_x = pd.Timestamp("2026-05-28 10:00:00", tz="UTC")
+    ann_y = s["max_cross_c"] * 0.95
     ax.annotate(
-        f"median crossed cross = {med:.2f}¢\n"
+        f"median cross = {med:.2f}¢\n"
         f"(≈ ${s['median_takeable_usd']:.0f} at displayed depth, "
         f"net of modeled 0.30% inst. fee)",
-        xy=(0.985, med), xycoords=("axes fraction", "data"),
-        xytext=(0, 14), textcoords="offset points",
-        ha="right", va="bottom", color=median_red, fontsize=14, fontweight="bold",
+        xy=(ann_x, ann_y), xycoords="data",
+        ha="center", va="center", color=median_red, fontsize=14, fontweight="bold",
+        bbox=dict(boxstyle="round,pad=0.35", facecolor="white", edgecolor=median_red,
+                  alpha=0.92, lw=1.2),
+        zorder=5,
     )
 
     ax.set_ylim(0, s["max_cross_c"] * 1.18)
     ax.set_xlabel("Time (UTC)")
     ax.set_ylabel("Cross-venue crossed spread (cents, pre-fee)")
-    ax.set_title("NYK championship market: cross-venue spread, crossed for ~14 hours",
-                 pad=14, fontweight="bold")
+    span_h = s["span_hours"]
+    ax.set_title(
+        f"NYK championship market: cross-venue spread, crossed for {span_h:.1f} hours",
+        pad=28, fontweight="bold",
+    )
+    ax.text(
+        0.5, 1.02,
+        f"crossed in {s['frac_crossed_paper']*100:.0f}% of snapshots — "
+        f"entire {span_h:.1f}h window",
+        transform=ax.transAxes, ha="center", va="bottom",
+        fontsize=15, fontweight="bold", color="#0d3b66",
+    )
 
     # X axis: readable hourly labels.
     ax.xaxis.set_major_locator(mdates.HourLocator(interval=2))
@@ -198,7 +212,7 @@ def make_figure(df: pd.DataFrame, s: dict) -> None:
         ha="center", fontsize=12, color="#888888", style="italic",
     )
 
-    fig.subplots_adjust(left=0.07, right=0.97, top=0.91, bottom=0.135)
+    fig.subplots_adjust(left=0.07, right=0.97, top=0.86, bottom=0.135)
     fig.savefig(OUT_PNG, dpi=100)
     plt.close(fig)
 
