@@ -4,14 +4,17 @@ Resolves *why* the crossed cross-venue spread sits there untaken: post-fill
 markout is negative on every one of the 8 markets at the 5-minute horizon.
 The displayed edge is adverse-selection-paid spread, not free money.
 
+Bars are uniformly colored — EXP-12a verdicts (REAL_EDGE / MARGINAL / etc.)
+are driven by gross + markout + fill-adjusted expected edge, not markout
+alone, so coloring by verdict on a markout-only chart is misleading.
+
 DATA (read-only, values used as computed by EXP-12a — NOT recomputed):
   * data/processed/exp12a_fill_summary.csv   — net 5-min markout per market
-        (markout_net_mean_5min_c), EXP-12a verdict classification.
+        (markout_net_mean_5min_c).
   * data/processed/exp12a_markout_samples.csv — per-leg fill counts at the
         5-min horizon (buy_n_fills + sell_n_fills).
 
 Output: data/processed/fig_markout_substack.png   (new file only)
-No edits to src/, markets.yaml, or existing figures.
 
 Run:
     uv run python scripts/fig_markout.py
@@ -29,7 +32,6 @@ os.environ.setdefault("MPLCONFIGDIR", tempfile.mkdtemp(prefix="mpl-"))
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.patches as mpatches  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
 
@@ -38,7 +40,9 @@ FILL_SUMMARY = ROOT / "data" / "processed" / "exp12a_fill_summary.csv"
 MARKOUT_SAMPLES = ROOT / "data" / "processed" / "exp12a_markout_samples.csv"
 OUT_PNG = ROOT / "data" / "processed" / "fig_markout_substack.png"
 
-# Readable labels for the 8-market panel.
+BAR_COLOR = "#cf222e"  # uniform: all markouts adverse
+THIN_FILL_N = 10       # EXP-12a low-confidence threshold (nb+ns)
+
 LABELS = {
     "co_aesp": "Colombia pres. (AESP)",
     "co_pval": "Colombia pres. (PVAL)",
@@ -48,14 +52,6 @@ LABELS = {
     "nyk": "NBA Finals (NYK)",
     "arod": "A. Rodgers retire (AROD)",
     "kelce": "T. Kelce retire (KELCE)",
-}
-
-# Classification -> (display, color). REAL_EDGE is green but flagged thin.
-CLASS_STYLE = {
-    "REAL_EDGE": ("Real edge (thin)", "#2da44e"),
-    "MARGINAL": ("Marginal", "#d4a72c"),
-    "ADVERSE-SELECTED": ("Adverse-selected", "#cf222e"),
-    "SUB-FILL": ("Sub-fill (won't fill)", "#8c959f"),
 }
 
 
@@ -69,12 +65,13 @@ def load() -> pd.DataFrame:
     fills = samp5.set_index("market")["n_fills"]
     summ = summ.copy()
     summ["n_fills"] = summ["market"].map(fills)
-    # The plotted quantity: net 5-min markout (mean), as computed by EXP-12a.
     summ["markout"] = summ["markout_net_mean_5min_c"]
     summ["markout_median"] = summ["markout_net_median_5min_c"]
+    summ["realized_c"] = summ["gross_edge_c"] + summ["markout_net_mean_5min_c"]
+    summ["adj_central_c"] = summ["adj_central"] * 100.0
     return summ[[
         "market", "markout", "markout_median", "verdict", "n_fills",
-        "gross_edge_c", "p_fill_5min",
+        "gross_edge_c", "realized_c", "adj_central_c", "p_fill_5min",
     ]]
 
 
@@ -89,30 +86,25 @@ def make_figure(df: pd.DataFrame) -> None:
         "axes.facecolor": "white",
     })
 
-    # Sort least-negative (top) to most-negative (bottom).
     d = df.sort_values("markout", ascending=True).reset_index(drop=True)
 
     fig, ax = plt.subplots(figsize=(16, 9), dpi=100)
     ypos = range(len(d))
-    colors = [CLASS_STYLE[v][1] for v in d["verdict"]]
 
-    ax.barh(list(ypos), d["markout"], color=colors, height=0.66, zorder=3)
+    ax.barh(list(ypos), d["markout"], color=BAR_COLOR, height=0.66, zorder=3)
 
     ax.set_yticks(list(ypos))
     ax.set_yticklabels([LABELS.get(m, m) for m in d["market"]])
-
-    # Emphasized zero line.
     ax.axvline(0, color="#24292f", lw=2.2, zorder=4)
 
     xmin = d["markout"].min()
     ax.set_xlim(xmin * 1.42, abs(xmin) * 0.34)
 
-    # Per-bar annotation: value + n fills (+ thin-edge flag).
     for i, row in d.iterrows():
         val = row["markout"]
         label = f"{val:.2f}¢   (n={int(row['n_fills'])} fills)"
-        if row["verdict"] == "REAL_EDGE":
-            label += "  ⚠ thin"
+        if int(row["n_fills"]) < THIN_FILL_N:
+            label += "  ⚠ thin data"
         ax.annotate(
             label,
             xy=(val, i), xytext=(-8, 0), textcoords="offset points",
@@ -124,7 +116,6 @@ def make_figure(df: pd.DataFrame) -> None:
         "Why the spread sits there: post-fill markout is negative on all 8 markets",
         pad=36, fontweight="bold",
     )
-    # Red subtitle: the takeaway, full-width so it never collides with bars.
     fig.text(
         0.5, 0.902,
         "negative markout = the fill moves against you  →  the displayed spread is "
@@ -137,20 +128,6 @@ def make_figure(df: pd.DataFrame) -> None:
     ax.tick_params(axis="y", length=0)
     ax.grid(axis="x", alpha=0.18, zorder=0)
 
-    # Legend by EXP-12a classification (counts in label).
-    counts = d["verdict"].value_counts()
-    order = ["REAL_EDGE", "MARGINAL", "ADVERSE-SELECTED", "SUB-FILL"]
-    handles = [
-        mpatches.Patch(
-            color=CLASS_STYLE[v][1],
-            label=f"{CLASS_STYLE[v][0]} ({int(counts.get(v, 0))})",
-        )
-        for v in order
-    ]
-    ax.legend(handles=handles, loc="upper left", fontsize=12.5,
-              frameon=True, framealpha=0.95, title="EXP-12a classification",
-              bbox_to_anchor=(0.005, 0.985))
-
     fig.text(
         0.5, 0.045,
         "EXP-12a fill-realism: daemon window 2026-05-28 (~14.5 h, 30 s polls)  ·  "
@@ -159,8 +136,8 @@ def make_figure(df: pd.DataFrame) -> None:
     )
     fig.text(
         0.5, 0.016,
-        "Net markout = mean of (buy-leg + sell-leg) price drift 5 min after a modeled fill, "
-        "per-leg fill-probability weighted; net of fees",
+        "Net markout = mean (buy-leg + sell-leg) mid drift 5 min after a modeled fill; "
+        "not the EXP-12a survivorship verdict (that uses gross + markout + P(fill))",
         ha="center", fontsize=11.5, color="#888888", style="italic",
     )
 
@@ -181,17 +158,23 @@ def main() -> int:
     for _, r in d.iterrows():
         flag = "  <-- POSITIVE!" if r["markout"] > 0 else ""
         print(f"  {LABELS.get(r['market'], r['market']):26s} "
-              f"{r['markout']:7.3f}c  (median {r['markout_median']:6.2f}c)  "
-              f"n={int(r['n_fills']):>3d}  {r['verdict']:16s}{flag}")
+              f"markout {r['markout']:7.3f}c  "
+              f"gross {r['gross_edge_c']:+.3f}c  "
+              f"realized {r['realized_c']:+.3f}c  "
+              f"adj_central {r['adj_central_c']:+.3f}c/ct  "
+              f"n={int(r['n_fills']):>3d}  {r['verdict']}{flag}")
     print("-" * 74)
     print(f"  markets with NEGATIVE net 5-min markout: "
           f"{int((d['markout'] <= 0).sum())} of {len(d)}")
     if n_pos:
-        print(f"  WARNING: {n_pos} market(s) computed POSITIVE — narrative says all ≤0!")
-    else:
-        print("  all 8 ≤ 0 — consistent with the toxic-spread narrative.")
-    print("  classification counts:",
-          dict(d["verdict"].value_counts()))
+        print(f"  WARNING: {n_pos} market(s) computed POSITIVE")
+    print()
+    print("  EXP-12a verdict driver (NOT markout rank alone):")
+    print("    SUB-FILL:        P(both fill @5min) < 5%")
+    print("    ADVERSE-SELECTED: gross + markout <= 0  (realized edge)")
+    print("    REAL_EDGE:       realized > 0 AND adj_central >= 0.05c/ct")
+    print("    MARGINAL:        realized > 0 AND adj_central < 0.05c/ct")
+    print("    adj_central = P(fill@5min) * (gross + markout) in $/ct")
     print("=" * 74)
     print(f"  wrote {OUT_PNG.relative_to(ROOT)}")
     return 0
