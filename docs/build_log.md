@@ -247,6 +247,8 @@ Output: `data/processed/exp3b_fee_sweep.md`.
   headline. These are *genuinely* takeable — both legs cross-side,
   instant lock — not the flow-contingent LP edges that EXP-3a's
   direction-blind Scenario D had assigned the same magnitudes to.
+  *(See errata below — this ~$73 is ex-NYK on the D.2 fetch; median
+  over 1,748 polls is **$190.82**, EXP-3c.)*
 - **New market `nba_finals_nyk` joins the takeable set** at
   institutional ($1.13, 282c). NYK wasn't in EXP-3a's C/D flip list
   (its 0.4c crossed spread was too tight for the retail/D scenarios
@@ -278,6 +280,15 @@ the fee engine fix.
 **Tests:** 51/51 green; no source code changed (EXP-3b is a script
 that parameterizes the existing engine, no `fees.py` / `arb.py`
 edits).
+
+> **Errata — institutional $ (2026-06-03):** The **~$73** above is the
+> **single-snapshot sum of the seven non-`nyk` markets** at D.2
+> (`snapshot_20260528T022943Z`, 02:29Z), with `nyk` logged separately at
+> **$1.13** — ex-NYK / pre-NYK-dislocation, not the full eight-market
+> panel. Recomputing that snapshot today: NYK **~$56**, eight-market sum
+> **~$129**. The time-median aggregate is **$190.82** (EXP-3c: sum of
+> 8-market institutional takeable $ per 30s poll, **n=1,748**, 14.8h).
+> Public-facing copy and `fig_fee_cliff_substack.png` use the median.
 
 ### EXP-3c — multi-snapshot persistence (2026-05-28)
 Convert the EXP-3b single-snapshot $73-at-institutional result into a
@@ -391,9 +402,10 @@ sweep), EXP-3c (persistence), external fee-tier check.
 at any accessible fee tier.
 - Retail (corrected, taker): 0/15 markets.
 - PM maker rebate active: 0/15 markets.
-- Institutional (0.30% taker / 0.20% rebate): 8/15 markets crossed in single
-  snapshot, $73 takeable; persistence sweep confirmed 5 PERSISTENT / 2
-  INTERMITTENT / 1 RARE / 0 snapshot-only across 14.5h.
+- Institutional (0.30% taker / 0.20% rebate): 8/15 markets crossed at
+  counterfactual tier; **median ~$191/snapshot** over 1,748 polls (EXP-3c;
+  see EXP-3b errata — prior **~$73** was ex-NYK on one D.2 fetch). Persistence:
+  5 PERSISTENT / 2 INTERMITTENT / 1 RARE / 0 snapshot-only across 14.5h.
 - External check 2026-05-28: neither Kalshi nor Polymarket offers a 0.30%
   fee tier to any participant. Institutional and zero-fee scenarios are
   counterfactual.

@@ -4,8 +4,8 @@ The "fee cliff" story (EXP-3b): zero markets are takeable at any
 retail-accessible fee tier; the arb only unlocks at a counterfactual
 institutional tier that neither Kalshi nor Polymarket offers.
 
-Recomputes per-tier takeable counts (and the institutional aggregate $)
-directly from the D.2 snapshot via the existing fee engine
+Recomputes per-tier takeable counts from the D.2 snapshot; institutional $
+annotation uses the EXP-3c median aggregate across 1,748 polls (not n=1).
 (`src/pm_micro/fees.py`) and the EXP-3b walker — NOT from remembered
 numbers or the .md table. Importing `scripts/exp3b_fee_sweep.py` guarantees
 the figure and the experiment use identical logic.
@@ -31,13 +31,27 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.patches as mpatches  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
+import pandas as pd  # noqa: E402
 import yaml  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
+EXP3C_CSV = ROOT / "data" / "processed" / "exp3c_persistence.csv"
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "src"))
 
 import exp3b_fee_sweep as sweep  # noqa: E402
+
+# 8-market panel from EXP-3b takeable subset (same list as exp3c_persistence.py).
+MARKETS_8 = [
+    "intl_president_pe_rpal",
+    "intl_president_co_aesp",
+    "intl_mayor_kr_oseh",
+    "sports_retirement_arod",
+    "us_mayor_la_kbas",
+    "nba_finals_nyk",
+    "intl_president_co_pval",
+    "sports_retirement_kelce",
+]
 
 OUT_PNG = ROOT / "data" / "processed" / "fig_fee_cliff_substack.png"
 
@@ -104,6 +118,36 @@ def recompute() -> dict:
         "takeable_counts": takeable_counts,
         "inst_net_by_market": inst_net_by_market,
         "inst_aggregate_usd": sum(inst_net_by_market.values()),
+        "inst_ex_nyk_usd": sum(
+            v for k, v in inst_net_by_market.items() if k != "nba_finals_nyk"
+        ),
+        "nyk_inst_usd": inst_net_by_market.get("nba_finals_nyk", 0.0),
+    }
+
+
+def exp3c_median_aggregate() -> dict:
+    """Median sum of institutional-tier takeable $ across the 8-market panel.
+
+    Matches EXP-3c `aggregate_headline`: per 30s timestamp, sum takeable_usd
+    over the 8 markets, then median across the daemon window.
+    """
+    df = pd.read_csv(EXP3C_CSV)
+    df["error"] = df["error"].fillna("")
+    d = df[df["error"] == ""].copy()
+    d["utc_ts"] = pd.to_datetime(d["utc_ts"], utc=True)
+    wide = d.pivot_table(
+        index="utc_ts", columns="market_id", values="takeable_usd", aggfunc="last",
+    ).reindex(columns=MARKETS_8).fillna(0.0)
+    total = wide.sum(axis=1)
+    ex_nyk = wide.drop(columns=["nba_finals_nyk"]).sum(axis=1)
+    return {
+        "n_snapshots": int(len(total)),
+        "start": total.index.min(),
+        "end": total.index.max(),
+        "span_hours": (total.index.max() - total.index.min()).total_seconds() / 3600,
+        "median_total_usd": float(total.median()),
+        "mean_total_usd": float(total.mean()),
+        "median_ex_nyk_usd": float(ex_nyk.median()),
     }
 
 
@@ -185,13 +229,14 @@ def make_figure(s: dict) -> None:
     ax.text(2.5, ymax * 1.12, "not offered by either venue", ha="center", va="center",
             fontsize=13.5, color="#5b6573", fontweight="bold")
 
-    # Institutional aggregate annotation.
+    # Institutional aggregate annotation (EXP-3c median, not single-snapshot).
     inst_count = s["takeable_counts"]["institutional"]
     inst_idx = TIER_PLOT_ORDER.index("institutional")
+    p3c = s["exp3c"]
     if inst_count:
         ax.annotate(
-            f"aggregate edge ≈ ${s['inst_aggregate_usd']:.0f} / snapshot\n"
-            f"at displayed depth (exclusive-fill)",
+            f"median aggregate edge ≈ ${p3c['median_total_usd']:.0f} / snapshot\n"
+            f"({p3c['n_snapshots']:,} × 30s polls, 8-market panel, exclusive-fill)",
             xy=(inst_idx, inst_count), xytext=(inst_idx - 0.02, inst_count * 0.62),
             ha="center", va="center", fontsize=13, color="#0d3b66",
             bbox=dict(boxstyle="round,pad=0.35", facecolor="white",
@@ -209,18 +254,21 @@ def make_figure(s: dict) -> None:
     ax.legend(handles=legend_handles, loc="upper left", fontsize=13,
               frameon=True, framealpha=0.95)
 
-    # Footer.
+    # Footer: bar counts from D.2 snapshot; $ annotation from EXP-3c persistence.
+    p3c = s["exp3c"]
     fig.text(
-        0.5, 0.045,
-        f"D.2 snapshot {snapshot_to_utc(s['snapshot'])}  ·  single snapshot (n=1)  ·  "
-        f"{s['n_computed']} markets computed, {s['n_crossed']} crossed at top-of-book, "
-        f"{s['n_skipped']} skipped (books missing)",
+        0.5, 0.052,
+        f"Takeable counts: D.2 snapshot {snapshot_to_utc(s['snapshot'])} "
+        f"({s['n_computed']} markets, {s['n_crossed']} crossed)  ·  "
+        f"Median $: EXP-3c daemon {p3c['start'].strftime('%Y-%m-%d %H:%M')}–"
+        f"{p3c['end'].strftime('%H:%M')} UTC ({p3c['span_hours']:.1f} h), "
+        f"n = {p3c['n_snapshots']:,} snapshots",
         ha="center", fontsize=12.5, color="#555555",
     )
     fig.text(
-        0.5, 0.016,
-        "Direction-enforced take-take (both legs cross-side), exclusive-fill at displayed depth; "
-        "engine: src/pm_micro/fees.py via EXP-3b",
+        0.5, 0.022,
+        "Direction-enforced take-take @ 0.30% institutional tier; "
+        "median = sum of 8-market takeable $ per poll (exclusive-fill at displayed depth)",
         ha="center", fontsize=11.5, color="#888888", style="italic",
     )
 
@@ -231,23 +279,38 @@ def make_figure(s: dict) -> None:
 
 def main() -> int:
     s = recompute()
+    s["exp3c"] = exp3c_median_aggregate()
     make_figure(s)
 
+    p3c = s["exp3c"]
     print("=" * 70)
-    print(f"EXP-3b fee-cliff — recomputed from {s['snapshot']}")
+    print("Fee-cliff figure — three institutional $ figures reconciled")
     print("=" * 70)
-    print(f"  markets computed:            {s['n_computed']}")
-    print(f"  markets crossed (top-of-book): {s['n_crossed']}")
-    print(f"  markets skipped:             {s['n_skipped']}")
-    print("  takeable count per tier:")
+    print()
+    print("(1) README / build_log ~$73 (EXP-3b narrative, single D.2 fetch)")
+    print("    What it measured: SUM of institutional takeable $ across the 8")
+    print("    crossed markets at snapshot_20260528T022943Z — one moment, not a median.")
+    print("    build_log recorded NYK at $1.13; with current books on that snapshot")
+    print("    NYK recomputes to $56.42, so the full-panel sum is now higher.")
+    print(f"    Ex-NYK sum (current books, same snapshot): ${s['inst_ex_nyk_usd']:.2f}  "
+          f"← matches ~$73")
+    print(f"    Full 8-market sum (current books):         ${s['inst_aggregate_usd']:.2f}")
+    print()
+    print("(2) D.2 single-fetch sum $129 (prior figure annotation, n=1)")
+    print(f"    D.2 single snapshot sum: ${s['inst_aggregate_usd']:.2f}")
+    print(f"    (NYK alone: ${s['nyk_inst_usd']:.2f} of that total)")
+    print()
+    print("(3) EXP-3c median aggregate (used in figure annotation)")
+    print(f"    Window: {p3c['start']} → {p3c['end']} ({p3c['span_hours']:.2f} h)")
+    print(f"    Snapshots: {p3c['n_snapshots']:,}  ·  markets: 8-panel institutional tier")
+    print(f"    Median sum of takeable $ per poll: ${p3c['median_total_usd']:.2f}")
+    print(f"    Mean:   ${p3c['mean_total_usd']:.2f}")
+    print(f"    Median ex-NYK (NYK dominates):     ${p3c['median_ex_nyk_usd']:.2f}")
+    print()
+    print("  takeable market COUNT per tier (D.2 snapshot):")
     for t in TIER_PLOT_ORDER:
         real = "real" if TIER_IS_REAL[t] else "counterfactual"
         print(f"    {t:14s} ({real:14s}): {s['takeable_counts'][t]} of {s['n_computed']}")
-    print(f"  institutional aggregate $ / snapshot (sum of net, exclusive-fill): "
-          f"${s['inst_aggregate_usd']:.2f}")
-    print("  institutional per-market net $:")
-    for mid, net in sorted(s["inst_net_by_market"].items(), key=lambda kv: -kv[1]):
-        print(f"    {mid:32s} ${net:8.2f}")
     print("=" * 70)
     print(f"  wrote {OUT_PNG.relative_to(ROOT)}")
     return 0
