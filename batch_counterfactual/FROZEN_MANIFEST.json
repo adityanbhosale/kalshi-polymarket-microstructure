@@ -1,0 +1,275 @@
+{
+  "generated_utc": "2026-06-06T03:58:34.587554+00:00",
+  "cutoff_utc": "2026-06-06T04:00:00+00:00",
+  "cutoff_label": "2026-06-05 23:59:59.999 ET (EDT, UTC-4) == 2026-06-06T04:00:00Z (exclusive)",
+  "freeze_rule": "include records/files with capture timestamp < cutoff_utc",
+  "primary_processed": {
+    "timeofday_poll": {
+      "path": "data/processed/timeofday_poll.csv",
+      "exists": true,
+      "ts_field": "utc_ts",
+      "rows_total_now": 1065536,
+      "rows_through_cutoff": 1065536,
+      "rows_after_cutoff": 0,
+      "rows_unparseable_ts": 0,
+      "sha256_through_cutoff_canonical": "cc1752b42258d3813419aa573e8321a136e30bbd7a819e3b5b4c8c3a43c3a007"
+    },
+    "event_colombia_r1_poll": {
+      "path": "data/processed/event_colombia_r1_poll.csv",
+      "exists": true,
+      "ts_field": "utc_ts",
+      "rows_total_now": 17688,
+      "rows_through_cutoff": 17688,
+      "rows_after_cutoff": 0,
+      "rows_unparseable_ts": 0,
+      "sha256_through_cutoff_canonical": "2025bbe6a8a773233ad0a368e1ce27f309c62c8edd4c49f3caaecf33ab17e8c1"
+    },
+    "event_test_smoke_poll": {
+      "path": "data/processed/event_test_smoke_poll.csv",
+      "exists": true,
+      "ts_field": "utc_ts",
+      "rows_total_now": 216,
+      "rows_through_cutoff": 216,
+      "rows_after_cutoff": 0,
+      "rows_unparseable_ts": 0,
+      "sha256_through_cutoff_canonical": "483649d73bd203b7a41e5cd06e5d85ec33c0eaf3a3bdaf383baf0c51f6da7fbf"
+    },
+    "microstructure_snapshot": {
+      "path": "data/processed/microstructure_snapshot.csv",
+      "exists": true,
+      "ts_field": "fetched_at",
+      "rows_total_now": 61,
+      "rows_through_cutoff": 61,
+      "rows_after_cutoff": 0,
+      "rows_unparseable_ts": 0,
+      "sha256_through_cutoff_canonical": "8b10cf1c247598ed0441d7ba2ed78011df194c0ef7907a91e2c54b3bd2f18911"
+    }
+  },
+  "ws_subsecond": {
+    "colombia_r1_2026_05_31": {
+      "path": "data/raw/ws_leadlag/colombia_r1/2026-05-31.jsonl",
+      "exists": true,
+      "records_total": 45930,
+      "records_through_cutoff": 45930,
+      "max_local_recv_utc": "2026-05-31T23:19:51.501377+00:00",
+      "sha256_through_cutoff": "69f65bf31deafc719e268b718989e0e89ffd5f6f5a7121b7818376714d51ee22"
+    }
+  },
+  "raw_trees": {
+    "timeofday": {
+      "path": "data/raw/timeofday",
+      "exists": true,
+      "files_through_cutoff": 266392,
+      "files_after_cutoff_excluded": 0,
+      "bytes_through_cutoff": 356467848,
+      "per_day": {
+        "2026-05-28": {
+          "files": 33200,
+          "bytes": 46855604
+        },
+        "2026-05-29": {
+          "files": 37936,
+          "bytes": 55442591
+        },
+        "2026-05-30": {
+          "files": 32160,
+          "bytes": 47447499
+        },
+        "2026-05-31": {
+          "files": 16949,
+          "bytes": 23134473
+        },
+        "2026-06-01": {
+          "files": 21600,
+          "bytes": 28783052
+        },
+        "2026-06-02": {
+          "files": 24101,
+          "bytes": 31344582
+        },
+        "2026-06-03": {
+          "files": 35872,
+          "bytes": 45528155
+        },
+        "2026-06-04": {
+          "files": 42496,
+          "bytes": 51585654
+        },
+        "2026-06-05": {
+          "files": 14974,
+          "bytes": 17891037
+        },
+        "2026-06-06": {
+          "files": 7104,
+          "bytes": 8455201
+        }
+      },
+      "index_sha256": "674c423437a1c9d3b626435a1920fcd2ca3859994413ed78f7d39c5d061c2042"
+    },
+    "event": {
+      "path": "data/raw/event",
+      "exists": true,
+      "files_through_cutoff": 4475,
+      "files_after_cutoff_excluded": 0,
+      "bytes_through_cutoff": 6140682,
+      "per_day": {
+        "2026-05-31": {
+          "files": 4421,
+          "bytes": 6057993
+        },
+        "2026-05-28": {
+          "files": 54,
+          "bytes": 82689
+        }
+      },
+      "index_sha256": "02635754ac0c510f5afc7d4889f52bafb30b4ecc9ae9dc0d2955cf4dc060d842"
+    }
+  },
+  "snapshot_dirs": {
+    "snapshot_20260525T220956Z": {
+      "path": "data/raw/snapshot_20260525T220956Z",
+      "exists": true,
+      "files": 8,
+      "bytes": 53506,
+      "index_sha256": "3b216dd4942940ebe1be473559ee6dfd6c349a85e4ce6c6f6f4ecb5b51c0be75"
+    },
+    "snapshot_20260528T022943Z": {
+      "path": "data/raw/snapshot_20260528T022943Z",
+      "exists": true,
+      "files": 45,
+      "bytes": 204237,
+      "index_sha256": "c34022c512d2b1fa5413b7dfe33211e937da7e591831ca1128456156d44d371e"
+    }
+  },
+  "market_inclusion": {
+    "intl_mayor_kr_oseh": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 86.5,
+      "pm_yes_two_sided_pct": 77.3,
+      "both_venues_two_sided_pct": 77.2,
+      "included": false
+    },
+    "intl_president_co_aesp": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 98.9,
+      "pm_yes_two_sided_pct": 99.3,
+      "both_venues_two_sided_pct": 98.8,
+      "included": true
+    },
+    "intl_president_co_pval": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 43.7,
+      "pm_yes_two_sided_pct": 44.6,
+      "both_venues_two_sided_pct": 43.7,
+      "included": false
+    },
+    "intl_president_pe_kfuj": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 98.9,
+      "pm_yes_two_sided_pct": 99.3,
+      "both_venues_two_sided_pct": 98.8,
+      "included": true
+    },
+    "intl_president_pe_rpal": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 98.9,
+      "pm_yes_two_sided_pct": 99.3,
+      "both_venues_two_sided_pct": 98.9,
+      "included": true
+    },
+    "intl_president_r1_co_icas": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 48.3,
+      "pm_yes_two_sided_pct": 94.1,
+      "both_venues_two_sided_pct": 48.3,
+      "included": false
+    },
+    "ma_acquisition_wb_psky": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 98.8,
+      "pm_yes_two_sided_pct": 99.2,
+      "both_venues_two_sided_pct": 98.8,
+      "included": true
+    },
+    "nba_finals_cle": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 0.0,
+      "pm_yes_two_sided_pct": 0.0,
+      "both_venues_two_sided_pct": 0.0,
+      "included": false
+    },
+    "nba_finals_nyk": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 98.9,
+      "pm_yes_two_sided_pct": 99.3,
+      "both_venues_two_sided_pct": 98.8,
+      "included": true
+    },
+    "nba_finals_okc": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 38.6,
+      "pm_yes_two_sided_pct": 38.6,
+      "both_venues_two_sided_pct": 38.6,
+      "included": false
+    },
+    "nba_finals_sas": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 98.9,
+      "pm_yes_two_sided_pct": 99.2,
+      "both_venues_two_sided_pct": 98.8,
+      "included": true
+    },
+    "sports_retirement_arod": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 98.8,
+      "pm_yes_two_sided_pct": 99.3,
+      "both_venues_two_sided_pct": 98.8,
+      "included": true
+    },
+    "sports_retirement_kelce": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 98.9,
+      "pm_yes_two_sided_pct": 99.3,
+      "both_venues_two_sided_pct": 98.9,
+      "included": true
+    },
+    "us_mayor_la_kbas": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 98.9,
+      "pm_yes_two_sided_pct": 99.3,
+      "both_venues_two_sided_pct": 98.9,
+      "included": true
+    },
+    "us_mayor_la_rhua": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 0.0,
+      "pm_yes_two_sided_pct": 20.5,
+      "both_venues_two_sided_pct": 0.0,
+      "included": false
+    },
+    "us_senate_ak_mpel": {
+      "daemon_cycles_present": 16649,
+      "frozen_cycles_total": 16649,
+      "kalshi_yes_two_sided_pct": 98.8,
+      "pm_yes_two_sided_pct": 99.3,
+      "both_venues_two_sided_pct": 98.8,
+      "included": true
+    }
+  },
+  "note_derived_excluded": "Derived analysis outputs (exp3c_persistence, exp12a_*, arb_results*, discovery_*, *.md, figures) are NOT part of the frozen capture set; they are regenerable from the frozen primaries above."
+}
