@@ -1,0 +1,91 @@
+{
+  "overall": {
+    "episode_starts_total": 1289,
+    "kalshi_found": 1289,
+    "polymarket_found": 1289,
+    "both_found": 1289,
+    "both_found_pct": 100.0
+  },
+  "per_pair": {
+    "intl_president_co_aesp": {
+      "episode_starts": 96,
+      "kalshi_found": 96,
+      "polymarket_found": 96,
+      "both_found": 96,
+      "bundle_missing": 0,
+      "both_found_pct": 100.0
+    },
+    "intl_president_pe_kfuj": {
+      "episode_starts": 74,
+      "kalshi_found": 74,
+      "polymarket_found": 74,
+      "both_found": 74,
+      "bundle_missing": 0,
+      "both_found_pct": 100.0
+    },
+    "intl_president_pe_rpal": {
+      "episode_starts": 170,
+      "kalshi_found": 170,
+      "polymarket_found": 170,
+      "both_found": 170,
+      "bundle_missing": 0,
+      "both_found_pct": 100.0
+    },
+    "ma_acquisition_wb_psky": {
+      "episode_starts": 50,
+      "kalshi_found": 50,
+      "polymarket_found": 50,
+      "both_found": 50,
+      "bundle_missing": 0,
+      "both_found_pct": 100.0
+    },
+    "nba_finals_nyk": {
+      "episode_starts": 241,
+      "kalshi_found": 241,
+      "polymarket_found": 241,
+      "both_found": 241,
+      "bundle_missing": 0,
+      "both_found_pct": 100.0
+    },
+    "nba_finals_sas": {
+      "episode_starts": 290,
+      "kalshi_found": 290,
+      "polymarket_found": 290,
+      "both_found": 290,
+      "bundle_missing": 0,
+      "both_found_pct": 100.0
+    },
+    "sports_retirement_arod": {
+      "episode_starts": 65,
+      "kalshi_found": 65,
+      "polymarket_found": 65,
+      "both_found": 65,
+      "bundle_missing": 0,
+      "both_found_pct": 100.0
+    },
+    "sports_retirement_kelce": {
+      "episode_starts": 129,
+      "kalshi_found": 129,
+      "polymarket_found": 129,
+      "both_found": 129,
+      "bundle_missing": 0,
+      "both_found_pct": 100.0
+    },
+    "us_mayor_la_kbas": {
+      "episode_starts": 174,
+      "kalshi_found": 174,
+      "polymarket_found": 174,
+      "both_found": 174,
+      "bundle_missing": 0,
+      "both_found_pct": 100.0
+    },
+    "us_senate_ak_mpel": {
+      "episode_starts": 0,
+      "kalshi_found": 0,
+      "polymarket_found": 0,
+      "both_found": 0,
+      "bundle_missing": 0,
+      "both_found_pct": 0.0
+    }
+  }
+}

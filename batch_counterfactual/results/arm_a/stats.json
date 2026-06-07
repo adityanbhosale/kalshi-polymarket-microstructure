@@ -1,0 +1,236 @@
+{
+  "n_pairs": 10,
+  "n_episodes_total": 1289,
+  "overall": {
+    "scope": "OVERALL",
+    "n_episodes": 1289,
+    "crossed_cycles": 67860,
+    "dur_median_s": 210.325654,
+    "dur_p90_s": 4272.575729,
+    "dur_max_s": 54524.12984,
+    "crossed_minutes": 35560.29,
+    "active_market_days": 10,
+    "crossed_min_per_market_day": 3556.03,
+    "gap_adjacent_episodes": 606,
+    "n_episodes_<1min": 455,
+    "crossed_min_<1min": 46.96,
+    "n_episodes_1-5min": 252,
+    "crossed_min_1-5min": 611.35,
+    "n_episodes_5-30min": 347,
+    "crossed_min_5-30min": 4342.2,
+    "n_episodes_>30min": 235,
+    "crossed_min_>30min": 30559.78,
+    "clearable_frac_gross": 1.0,
+    "median_pi_total_gross_c": 0.7,
+    "clearable_frac_retail": 0.0566,
+    "median_pi_total_retail_c": 0.313,
+    "clearable_frac_retail_pm_rebate": 0.1296,
+    "median_pi_total_retail_pm_rebate_c": 0.6424,
+    "clearable_frac_institutional": 0.7742,
+    "median_pi_total_institutional_c": 0.541
+  },
+  "sanity_gate": {
+    "pair": "nba_finals_nyk",
+    "n_episodes": 241,
+    "longest_duration_h": 15.15,
+    "longest_n_cycles": 1787,
+    "crossed_cycle_fraction_pct": 56.5,
+    "longest_clearable": {
+      "gross": true,
+      "retail": false,
+      "retail_pm_rebate": false,
+      "institutional": true
+    }
+  },
+  "episode_gap_max_s": 600.0,
+  "inclusion": [
+    {
+      "pair": "intl_president_co_aesp",
+      "presence_both_pct": 98.8,
+      "conditional_two_sided_pct": 100.0,
+      "included": true
+    },
+    {
+      "pair": "intl_president_pe_kfuj",
+      "presence_both_pct": 98.8,
+      "conditional_two_sided_pct": 100.0,
+      "included": true
+    },
+    {
+      "pair": "intl_president_pe_rpal",
+      "presence_both_pct": 98.9,
+      "conditional_two_sided_pct": 100.0,
+      "included": true
+    },
+    {
+      "pair": "ma_acquisition_wb_psky",
+      "presence_both_pct": 98.8,
+      "conditional_two_sided_pct": 100.0,
+      "included": true
+    },
+    {
+      "pair": "nba_finals_nyk",
+      "presence_both_pct": 98.8,
+      "conditional_two_sided_pct": 100.0,
+      "included": true
+    },
+    {
+      "pair": "nba_finals_sas",
+      "presence_both_pct": 98.8,
+      "conditional_two_sided_pct": 100.0,
+      "included": true
+    },
+    {
+      "pair": "sports_retirement_arod",
+      "presence_both_pct": 98.8,
+      "conditional_two_sided_pct": 100.0,
+      "included": true
+    },
+    {
+      "pair": "sports_retirement_kelce",
+      "presence_both_pct": 98.9,
+      "conditional_two_sided_pct": 100.0,
+      "included": true
+    },
+    {
+      "pair": "us_mayor_la_kbas",
+      "presence_both_pct": 98.9,
+      "conditional_two_sided_pct": 100.0,
+      "included": true
+    },
+    {
+      "pair": "us_senate_ak_mpel",
+      "presence_both_pct": 98.8,
+      "conditional_two_sided_pct": 100.0,
+      "included": true
+    },
+    {
+      "pair": "nba_finals_okc",
+      "presence_both_pct": 38.6,
+      "conditional_two_sided_pct": 100.0,
+      "included": false
+    },
+    {
+      "pair": "intl_president_r1_co_icas",
+      "presence_both_pct": 48.3,
+      "conditional_two_sided_pct": 99.9,
+      "included": false
+    },
+    {
+      "pair": "intl_mayor_kr_oseh",
+      "presence_both_pct": 79.1,
+      "conditional_two_sided_pct": 97.6,
+      "included": false
+    },
+    {
+      "pair": "intl_president_co_pval",
+      "presence_both_pct": 48.3,
+      "conditional_two_sided_pct": 90.4,
+      "included": false
+    },
+    {
+      "pair": "nba_finals_cle",
+      "presence_both_pct": 0.0,
+      "conditional_two_sided_pct": 0.0,
+      "included": false
+    },
+    {
+      "pair": "us_mayor_la_rhua",
+      "presence_both_pct": 98.8,
+      "conditional_two_sided_pct": 0.0,
+      "included": false
+    }
+  ],
+  "sensitivity": [
+    {
+      "pair": "intl_president_co_aesp",
+      "n_episodes_90s": 150,
+      "longest_h_90s": 5.27,
+      "n_episodes_300s": 117,
+      "longest_h_300s": 5.27,
+      "n_episodes_600s": 96,
+      "longest_h_600s": 5.27
+    },
+    {
+      "pair": "intl_president_pe_kfuj",
+      "n_episodes_90s": 105,
+      "longest_h_90s": 8.52,
+      "n_episodes_300s": 82,
+      "longest_h_300s": 8.52,
+      "n_episodes_600s": 74,
+      "longest_h_600s": 8.52
+    },
+    {
+      "pair": "intl_president_pe_rpal",
+      "n_episodes_90s": 241,
+      "longest_h_90s": 6.62,
+      "n_episodes_300s": 197,
+      "longest_h_300s": 6.62,
+      "n_episodes_600s": 170,
+      "longest_h_600s": 6.77
+    },
+    {
+      "pair": "ma_acquisition_wb_psky",
+      "n_episodes_90s": 83,
+      "longest_h_90s": 12.1,
+      "n_episodes_300s": 69,
+      "longest_h_300s": 12.16,
+      "n_episodes_600s": 50,
+      "longest_h_600s": 12.29
+    },
+    {
+      "pair": "nba_finals_nyk",
+      "n_episodes_90s": 300,
+      "longest_h_90s": 13.54,
+      "n_episodes_300s": 267,
+      "longest_h_300s": 13.54,
+      "n_episodes_600s": 241,
+      "longest_h_600s": 15.15
+    },
+    {
+      "pair": "nba_finals_sas",
+      "n_episodes_90s": 340,
+      "longest_h_90s": 3.31,
+      "n_episodes_300s": 310,
+      "longest_h_300s": 3.31,
+      "n_episodes_600s": 290,
+      "longest_h_600s": 3.31
+    },
+    {
+      "pair": "sports_retirement_arod",
+      "n_episodes_90s": 80,
+      "longest_h_90s": 5.58,
+      "n_episodes_300s": 73,
+      "longest_h_300s": 5.58,
+      "n_episodes_600s": 65,
+      "longest_h_600s": 5.58
+    },
+    {
+      "pair": "sports_retirement_kelce",
+      "n_episodes_90s": 251,
+      "longest_h_90s": 13.77,
+      "n_episodes_300s": 178,
+      "longest_h_300s": 13.77,
+      "n_episodes_600s": 129,
+      "longest_h_600s": 15.15
+    },
+    {
+      "pair": "us_mayor_la_kbas",
+      "n_episodes_90s": 218,
+      "longest_h_90s": 8.46,
+      "n_episodes_300s": 193,
+      "longest_h_300s": 8.46,
+      "n_episodes_600s": 174,
+      "longest_h_600s": 8.61
+    },
+    {
+      "pair": "us_senate_ak_mpel",
+      "n_episodes_90s": 0,
+      "longest_h_90s": 0.0,
+      "n_episodes_300s": 0,
+      "longest_h_300s": 0.0,
+      "n_episodes_600s": 0,
+      "longest_h_600s": 0.0
+    }
+  ]
+}

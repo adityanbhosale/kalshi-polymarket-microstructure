@@ -1,0 +1,12 @@
+{
+  "pair": "nba_finals_nyk",
+  "n_episodes": 300,
+  "longest_duration_h": 13.54,
+  "longest_n_cycles": 1620,
+  "longest_clearable": {
+    "gross": true,
+    "retail": false,
+    "retail_pm_rebate": false,
+    "institutional": true
+  }
+}

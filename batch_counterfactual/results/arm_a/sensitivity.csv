@@ -1,0 +1,11 @@
+pair,n_episodes_90s,longest_h_90s,n_episodes_300s,longest_h_300s,n_episodes_600s,longest_h_600s
+intl_president_co_aesp,150,5.27,117,5.27,96,5.27
+intl_president_pe_kfuj,105,8.52,82,8.52,74,8.52
+intl_president_pe_rpal,241,6.62,197,6.62,170,6.77
+ma_acquisition_wb_psky,83,12.1,69,12.16,50,12.29
+nba_finals_nyk,300,13.54,267,13.54,241,15.15
+nba_finals_sas,340,3.31,310,3.31,290,3.31
+sports_retirement_arod,80,5.58,73,5.58,65,5.58
+sports_retirement_kelce,251,13.77,178,13.77,129,15.15
+us_mayor_la_kbas,218,8.46,193,8.46,174,8.61
+us_senate_ak_mpel,0,0.0,0,0.0,0,0.0
