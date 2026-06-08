@@ -24,9 +24,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from _common import BUCKET_LABELS, FEE_CATEGORY, FIGS, INCLUDED_PAIRS, RESULTS
+from _common import BUCKET_LABELS, FEE_CATEGORY, FIGS, INCLUDED_PAIRS, LADDERS, RESULTS
 from arm_a_clearance import TIERS
-from auction import clearance_bounds
+from arm_a_sized import _orders_from_ladder, _prune_to_band
+from auction import clear
 from book import Panel
 from fees import Tier
 
@@ -112,7 +113,7 @@ def _window_quotes(panel: Panel, pair: str, t0, t1) -> pd.DataFrame:
     return m.sort_values("ts")
 
 
-def fig_a3(ep: pd.DataFrame, sized: pd.DataFrame | None) -> None:
+def fig_a3(ep: pd.DataFrame, sized: pd.DataFrame | None) -> list[tuple]:
     panel = Panel()
     nyk = ep[ep["pair"] == "nba_finals_nyk"].sort_values("duration_s", ascending=False).iloc[0]
     t0, t1 = nyk["start_ts"], nyk["end_ts"]
@@ -132,37 +133,48 @@ def fig_a3(ep: pd.DataFrame, sized: pd.DataFrame | None) -> None:
                   f"({int(nyk['n_cycles'])} cycles), Kalshi bid > Polymarket ask")
     ax1.legend(fontsize=8, ncol=2)
 
-    # Bottom: counterfactual first call at episode start, per-contract PI by tier.
-    pair_state = panel.paired_state("nba_finals_nyk", t0)
+    # Bottom: per-tier TOTAL price improvement from the SAME clear() that drives
+    # the headline numbers (max_volume objective on the full extracted ladder).
     cat = FEE_CATEGORY["nba_finals_nyk"]
-    labels, pi_k, pi_p = [], [], []
+    lad = pd.read_parquet(LADDERS / "nba_finals_nyk.parquet")
+    snap = lad[lad["ts"] == pd.Timestamp(t0)]
+    orders = _prune_to_band(_orders_from_ladder(snap))
+
+    labels, agg_pis, qtys, blended = [], [], [], []
+    tier_table: list[tuple[str, float, float, float | None]] = []
     for tlabel, tier in TIERS:
-        r = clearance_bounds(pair_state[0], pair_state[1], tier, category=cat)
+        res = clear(orders, "max_volume", tier, category=cat) if orders else None
+        if res is None or res.clearing_price is None:
+            agg, qty, blend = 0.0, 0.0, None
+        else:
+            agg, qty = float(res.agg_pi), float(res.total_qty)
+            blend = (agg / qty * 100.0) if qty else None
         labels.append(tlabel)
-        pi_k.append(float(r.pi_kalshi_c) if (r.clearable and r.pi_kalshi_c is not None) else 0.0)
-        pi_p.append(float(r.pi_polymarket_c) if (r.clearable and r.pi_polymarket_c is not None) else 0.0)
+        agg_pis.append(agg)
+        qtys.append(qty)
+        blended.append(blend)
+        tier_table.append((tlabel, agg, qty, blend))
+
     x = np.arange(len(labels))
-    ax2.bar(x - 0.2, pi_k, 0.4, color="#1f77b4", label="Kalshi side PI (¢/contract)")
-    ax2.bar(x + 0.2, pi_p, 0.4, color="#d62728", label="Polymarket side PI (¢/contract)")
-    ymax = max(pi_k + pi_p + [0.1])
-    ax2.set_ylim(0, ymax * 1.45)
-    # annotate size-weighted $ PI / contracts if available (inside headroom)
-    if sized is not None:
-        s0 = sized[sized["episode_id"] == nyk["episode_id"]].set_index("tier")
-        for i, tl in enumerate(labels):
-            if tl in s0.index and bool(s0.loc[tl, "clearable"]):
-                ax2.annotate(f"${s0.loc[tl,'pi_usd_vol']:,.0f}\n{s0.loc[tl,'contracts_vol']:,.0f} ctr",
-                             (i, max(pi_k[i], pi_p[i]) + ymax * 0.06), fontsize=7,
-                             ha="center", va="bottom")
+    ax2.bar(x, agg_pis, 0.6, color=[TIER_COLORS[t] for t in labels], edgecolor="white")
+    ymax = max(agg_pis + [1.0])
+    ax2.set_ylim(0, ymax * 1.30)
+    for i, (agg, qty, blend) in enumerate(zip(agg_pis, qtys, blended)):
+        if agg > 0 and blend is not None:
+            ax2.annotate(f"${agg:,.0f}\n{qty:,.0f} ctr\n{blend:.3f}¢/ctr",
+                         (i, agg + ymax * 0.03), fontsize=7.5, ha="center", va="bottom")
+        else:
+            ax2.annotate("$0\n(not clearable)", (i, ymax * 0.03), fontsize=7.5,
+                         ha="center", va="bottom", color="0.4")
     ax2.set_xticks(x)
     ax2.set_xticklabels(["gross", "retail", "retail+rebate", "institutional"])
-    ax2.set_ylabel("per-contract PI (¢)")
-    ax2.set_title("counterfactual single call at episode start — per-contract PI per side\n"
-                  "(size-weighted $PI / executable contracts annotated)", fontsize=10)
-    ax2.legend(fontsize=8)
+    ax2.set_ylabel("total price improvement at first-clearance ($)")
+    ax2.set_title("single uniform-price call on full extracted ladders — "
+                  "both legs, depth-integrated", fontsize=10)
     fig.tight_layout()
-    fig.savefig(FIGS / "fig_a3_knicks_flagship.png")
+    fig.savefig(FIGS / "fig_a3_knicks_flagship.png", bbox_inches="tight")
     plt.close(fig)
+    return tier_table
 
 
 # -------------------------------------------------------------------------

@@ -571,3 +571,114 @@ NBA Finals G1 deploy (Wed Jun 3).
 F.1 REST remains capture of record until clock-sync cross-check passes.
 
 **Tests:** 114/114 green (97 prior + 17 new).
+
+
+## Reconciliation — fig_a3 bottom-panel bars vs $/contract annotation (2026-06-08T04:30:16Z)
+
+Read-only probe (`batch_counterfactual/arms/_recon_fig_a3.py`) of the flagship NYK first-clearance episode. Verifies whether the bottom-panel per-contract ¢ bars reconcile with the annotated size-weighted $ / executable-contract figure.
+
+```
+==============================================================================
+fig_a3 RECONCILIATION — flagship NYK first-clearance episode
+==============================================================================
+  episode_id = nba_finals_nyk#0000
+  start_ts   = 2026-05-28 04:01:57.339434+00:00
+  duration   = 15.15 h / 1787 cycles
+  pm_fee_category = sports
+  top-of-book: Kalshi bid/ask = 0.300/0.310   Polymarket bid/ask = 0.284/0.285
+  ladder levels in band (both venues): 13
+
+------------------------------------------------------------------------------
+(a) TOTAL EXECUTABLE CONTRACTS at the clearing price (sized clear, max_volume)
+    = ClearingResult.total_qty = min(participating demand, supply) at p_clear
+------------------------------------------------------------------------------
+    gross              contracts=  132,291.89   clear_px=0.29   n_fills=7
+    retail             contracts=        0.00   clear_px=None   n_fills=0
+    retail_pm_rebate   contracts=        0.00   clear_px=None   n_fills=0
+    institutional      contracts=  132,253.44   clear_px=0.289   n_fills=6
+
+------------------------------------------------------------------------------
+(b) THE $ TOTAL PRICE-IMPROVEMENT FIGURE (the annotation; '$468' = gross tier)
+------------------------------------------------------------------------------
+    gross-tier agg_pi (annotated $) = $468.14
+    Source: ClearingResult.agg_pi from auction._allocate, in DOLLARS (price units).
+    Exact formula — summed over BOTH legs, over ALL filled contracts:
+        agg_pi = Σ_{filled buys}  (limit_i − p_eff_i) · qty_i
+               + Σ_{filled sells} (p_eff_i − limit_i) · qty_i
+      where p_eff includes the per-leg fee (fee=0 at the gross/ZERO tier),
+      limit_i is each RESTING ladder order's own quote (NOT a single touch),
+      and the sum runs across EVERY filled level on BOTH venues — i.e. it is
+      size-weighted over the whole crossing band, both legs, not one leg and
+      not (clearing_price − single resting touch).
+    Implied size-weighted avg total PI = agg_pi/contracts = 0.3539 ¢/contract (both legs combined).
+
+------------------------------------------------------------------------------
+(c) THE PER-CONTRACT ¢ BAR HEIGHTS (bottom-panel bars)
+------------------------------------------------------------------------------
+    Source: clearance_bounds(...).pi_kalshi_c / .pi_polymarket_c.
+    Definition: TOP-OF-BOOK / MARGINAL per-contract PI of EACH SIDE at the
+    midpoint of the price-only feasible interval, using ONLY the best quotes:
+        midpoint m = mid(feasible_range)
+        pi_kalshi_c     = (k_best_bid − buy_cost(m, kalshi)) · 100        [buy_k_… side]
+                       or (sell_proceeds(m, kalshi) − k_best_ask) · 100
+        pi_polymarket_c = (sell_proceeds(m, pm) − p_best_ask) · 100        [resp.]
+                       or (p_best_bid − buy_cost(m, pm)) · 100
+    => single-contract PI at the TOUCH; NOT size-weighted, NOT averaged over fills.
+    gross              pi_kalshi=0.7000¢  pi_polymarket=0.8000¢  (sum=1.5000¢)  bounds_clear_px=0.293
+    retail             pi_kalshi=0.0000¢  pi_polymarket=0.0000¢  (sum=0.0000¢)  bounds_clear_px=None
+    retail_pm_rebate   pi_kalshi=0.0000¢  pi_polymarket=0.0000¢  (sum=0.0000¢)  bounds_clear_px=None
+    institutional      pi_kalshi=0.6121¢  pi_polymarket=0.7121¢  (sum=1.3242¢)  bounds_clear_px=0.293
+
+------------------------------------------------------------------------------
+ASSERTION  bar_height_cents * contracts / 100 == annotated_dollars  (per tier, both sides)
+------------------------------------------------------------------------------
+    gross          kalshi     bar= 0.7000¢ *     132,292 /100 = $      926.04  vs annotated $    468.14   FAIL  (lhs/rhs= 1.978)
+    gross          polymarket bar= 0.8000¢ *     132,292 /100 = $    1,058.34  vs annotated $    468.14   FAIL  (lhs/rhs= 2.261)
+    retail             not clearable (no bars / no annotation) — skipped
+    retail_pm_rebate   not clearable (no bars / no annotation) — skipped
+    institutional  kalshi     bar= 0.6121¢ *     132,253 /100 = $      809.52  vs annotated $    238.80   FAIL  (lhs/rhs= 3.390)
+    institutional  polymarket bar= 0.7121¢ *     132,253 /100 = $      941.78  vs annotated $    238.80   FAIL  (lhs/rhs= 3.944)
+
+  RESULT: ASSERTION FAILS
+
+  Cross-check with BOTH sides summed (pi_k+pi_p), still vs the same annotation:
+    gross          (pi_k+pi_p)=1.5000¢ -> $    1,984.38 vs $    468.14  (lhs/rhs= 4.239)
+    institutional  (pi_k+pi_p)=1.3242¢ -> $    1,751.30 vs $    238.80  (lhs/rhs= 7.334)
+
+------------------------------------------------------------------------------
+DIAGNOSIS — what the bars actually represent
+------------------------------------------------------------------------------
+  The assertion FAILS by construction: the two quantities are not the same metric.
+  * BARS  = TOP-OF-BOOK MARGINAL per-contract PI of ONE side at the best-quote
+            midpoint (clearance_bounds, price-only; the panel has no sizes).
+  * ANNOTATION = SIZE-WEIGHTED TOTAL agg_pi summed over BOTH legs across every
+            filled level of the FULL extracted ladder (auction.clear, max_volume).
+  Three independent reasons they cannot reconcile, even after unit conversion:
+    1. one leg (bar) vs both legs (agg_pi);
+    2. touch-only marginal PI (bar) vs depth-averaged PI over the whole band
+       (deeper ladder levels earn far less PI, diluting agg_pi/contract well
+       below the top-of-book value);
+    3. the clearing price itself differs — clearance_bounds midpoint uses only
+       the best quotes, while clear() prices the full crossing band.
+  bar_height_cents * contracts / 100 therefore OVERSTATES agg_pi (lhs/rhs > 1):
+  it applies a touch-level per-contract edge to the entire size-weighted volume.
+  The bars are a PER-CONTRACT (top-of-book) statistic; the annotation is an
+  AGGREGATE (size-weighted, both-legs) statistic. They share an episode, not a
+  formula, and should be labelled as distinct axes — not multiplied together.
+```
+
+
+## fig_a3 bottom panel — per-tier TOTAL price improvement (2026-06-08T04:40:36Z)
+
+Regenerated ONLY fig_a3 (frozen set + other figures untouched). The bottom panel now plots ClearingResult.agg_pi (both legs, depth-integrated) from the SAME clear() / max_volume call that produces the headline numbers, replacing the prior per-side per-contract clearance_bounds bars. Per-tier table:
+
+```
+fig_a3 bottom panel regenerated: per-tier TOTAL price improvement (clear, max_volume)
+flagship NYK#0000  15.15h  single uniform-price call on full extracted ladders
+tier                   agg_pi ($)      total_qty   agg_pi/total_qty (¢)
+-----------------------------------------------------------------------
+gross                      468.14     132,291.89                 0.3539
+retail                       0.00           0.00    n/a (not clearable)
+retail_pm_rebate             0.00           0.00    n/a (not clearable)
+institutional              238.80     132,253.44                 0.1806
+```
