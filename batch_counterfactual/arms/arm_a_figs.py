@@ -180,17 +180,26 @@ def fig_a3(ep: pd.DataFrame, sized: pd.DataFrame | None) -> list[tuple]:
 # -------------------------------------------------------------------------
 def fig_a4(summ: pd.DataFrame) -> None:
     s = summ[summ["scope"].isin(INCLUDED_PAIRS)].copy()
-    s = s.sort_values("crossed_min_per_market_day", ascending=True)
+    # Included-but-never-crossed pairs (e.g. us_senate_ak_mpel) have a NaN
+    # crossed_min_per_market_day — render them as explicit labeled 0-length bars
+    # rather than silently dropping them from the chart.
+    s["value"] = s["crossed_min_per_market_day"].fillna(0.0)
+    s["never_crossed"] = s["crossed_min_per_market_day"].isna()
+    s = s.sort_values(["value", "scope"], ascending=[True, True])
     fig, ax = plt.subplots(figsize=(8.5, 5.2))
-    ax.barh(s["scope"], s["crossed_min_per_market_day"], color="#3a7fb0",
-            edgecolor="white")
-    for y, (v, md) in enumerate(zip(s["crossed_min_per_market_day"], s["active_market_days"])):
-        ax.annotate(f"{v:.0f} min/day  ({int(md)}d)", (v, y), fontsize=8,
-                    va="center", ha="left", xytext=(3, 0), textcoords="offset points")
+    colors = ["#c0c0c0" if nc else "#3a7fb0" for nc in s["never_crossed"]]
+    ax.barh(s["scope"], s["value"], color=colors, edgecolor="white")
+    for y, (v, md, nc) in enumerate(zip(s["value"], s["active_market_days"],
+                                        s["never_crossed"])):
+        label = ("0 (included, never crossed)" if nc
+                 else f"{v:.0f} min/day  ({int(md)}d)")
+        ax.annotate(label, (v, y), fontsize=8, va="center", ha="left",
+                    xytext=(3, 0), textcoords="offset points",
+                    color=("0.45" if nc else "black"))
     ax.set_xlabel("minutes in gross-crossed state per active market-day "
                   "(outage + per-pair gap time excluded)")
     ax.set_title("fig_a4 — time-in-crossed-state intensity, per pair")
-    ax.margins(x=0.18)
+    ax.margins(x=0.20)
     fig.tight_layout()
     fig.savefig(FIGS / "fig_a4_minutes_crossed_per_day.png")
     plt.close(fig)

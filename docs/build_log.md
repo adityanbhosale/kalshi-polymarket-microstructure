@@ -682,3 +682,36 @@ retail                       0.00           0.00    n/a (not clearable)
 retail_pm_rebate             0.00           0.00    n/a (not clearable)
 institutional              238.80     132,253.44                 0.1806
 ```
+
+
+## fig_a4 — included-never-crossed bar + day-count reconciliation (2026-06-08T04:50:05Z)
+
+Regenerated ONLY fig_a4 (frozen set + other figures untouched). us_senate_ak_mpel now renders as an explicit grey 0-length bar labeled "0 (included, never crossed)". Day-count table + figure-vs-essay reconciliation:
+
+```
+fig_a4 regenerated: per-pair active-market-day counts (= distinct UTC calendar
+dates on which an episode STARTED; the figure divides crossed-minutes by this).
+
+pair                       active_market_days  crossed_min  crossed_min/day
+---------------------------------------------------------------------------
+intl_president_co_aesp                      9      2278.13           253.13
+intl_president_pe_kfuj                      8      2566.32           320.79
+intl_president_pe_rpal                     10      4617.69           461.77
+ma_acquisition_wb_psky                     10      3521.93           352.19
+nba_finals_nyk                             10      4824.29           482.43
+nba_finals_sas                             10      3386.51           338.65
+sports_retirement_arod                      5      2261.92           452.38
+sports_retirement_kelce                    10      8462.84           846.28
+us_mayor_la_kbas                           10      3640.68           364.07
+us_senate_ak_mpel                           0         0.00 n/a (never crossed)
+---------------------------------------------------------------------------
+OVERALL                                    10     35560.29          3556.03
+
+=== day-count reconciliation (figure vs essay) ===
+capture span (episode starts): 2026-05-28 04:01:57.339434+00:00 -> 2026-06-06 03:38:10.945291+00:00
+  elapsed wall-clock          = 8.983 days  (~9 x 24h periods)
+  distinct UTC calendar dates = 10  (05-28 .. 06-06, boundary-inclusive)
+  figure active_market_days   = distinct UTC calendar dates with an episode start
+  => NYK "(10d)" counts CALENDAR DATES TOUCHED (10), not 24h periods elapsed (~9).
+  Essay "9 days of capture" = elapsed duration. DIFFERENT measures; both correct.
+```
